@@ -1,17 +1,21 @@
 /*
-* React Ready (https://github.com/michaelchiang/react-ready)
-* Copyright (c) 2015 Michael Chiang
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * React Ready (https://github.com/michaelchiang/react-ready)
+ * Copyright (c) 2015 Michael Chiang
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 var webpack = require("webpack");
 var path = require("path");
 var minimist = require("minimist");
 
 module.exports = {
-    entry: ['babel-core/polyfill', './src/client/app.js'],
+    entry: [
+        'webpack/hot/dev-server',
+        'webpack-hot-middleware/client',
+        'babel-core/polyfill',
+        './src/client/app.js'],
     output: {
         path: path.join(__dirname, "build", "public"),
         filename: "app.js",
@@ -29,11 +33,11 @@ module.exports = {
             {
                 test: /\.css/,
                 exclude: /\.useable\.css$/,
-                loader: "style!css?minimize!autoprefixer"
+                loader: "style!css!autoprefixer"
             },
             {
                 test: /\.useable\.css$/,
-                loader: "style/useable!css?minimize!autoprefixer"
+                loader: "style/useable!css!autoprefixer"
             },
             {
                 test: /\.gif/,
@@ -53,27 +57,17 @@ module.exports = {
             },
             {
                 test: /\.jsx?$/,
-                include: [path.join(__dirname, 'src', 'client'), path.join(__dirname, 'src', 'common')],
-                loader: 'babel'
+                loaders: ['babel?cacheDirectory=true'],
+                include: [path.join(__dirname, 'src', 'client'), path.join(__dirname, 'src', 'common')]
             }
         ]
     },
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            },
-            exclude: /node_module/
-        }),
-        new webpack.DefinePlugin({
-            "process.env": {
-                // This has effect on the react lib size
-                "NODE_ENV": JSON.stringify("production")
-            }
-        })],
-    devtool: "source-map",
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin()
+    ],
+    devtool: "cheap-module-source-map",
     node: {
         fs: "empty"
     }

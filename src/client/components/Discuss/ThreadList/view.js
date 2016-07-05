@@ -7,10 +7,9 @@
  */
 
 import React from 'react';
+import {connect} from 'react-redux';
 import Link from 'react-router/lib/Link.js';
-import ThreadsActions from '../../../actions/ThreadsActions.js';
-import ThreadsStore from '../../../stores/ThreadsStore.js';
-import Reflux from 'Reflux';
+import DiscussActions from '../../../actions/DiscussActions.js';
 import _ from 'lodash';
 
 var ThreadItem = React.createClass({
@@ -26,35 +25,31 @@ var ThreadItem = React.createClass({
 });
 
 var ThreadList = React.createClass({
-    mixins: [Reflux.connect(ThreadsStore)],
-    handleDeleteThread: function (id) {
-        var thisArg = this;
-        ThreadsActions.deleteThread(id, (error, success) => {
-            if (!error && success === true) {
-                // refresh page
-                ThreadsActions.getThreads((_error, _data) => {
-                    if (!_error) {
-                        thisArg.setState({list: _data});
-                    }
-                });
-            }
-        });
+    handleDeleteThread: function () {
+        // var thisArg = this;
+        // ThreadsActions.deleteThread(id, (error, success) => {
+        //     if (!error && success === true) {
+        //         // refresh page
+        //         ThreadsActions.getThreads((_error, _data) => {
+        //             if (!_error) {
+        //                 thisArg.setState({list: _data});
+        //             }
+        //         });
+        //     }
+        // });
     },
-    getInitialState: function() {
-        ThreadsActions.getThreads((error, data) => {
-            if (!error) {
-                this.setState({list: data});
-            }
-        });
+    componentDidMount() {
+        const {dispatch} = this.props;
+        dispatch(DiscussActions.getThreads());
     },
     render: function () {
-        if (!this.state.list) {
+        if (!this.props.list) {
             return <ul></ul>;
         }
 
         return (
             <ul>
-                {_.map(this.state.list, (item) => {
+                {_.map(this.props.list, (item) => {
                     return <ThreadItem key={item.id} id={item.id} title={item.title} handleDeleteThread={this.handleDeleteThread.bind(this, item.id)} />;
                 })}
             </ul>
@@ -62,4 +57,14 @@ var ThreadList = React.createClass({
     }
 });
 
-export default ThreadList;
+function mapStateToProps(state) {
+    if (state === undefined) {
+        state = {list: []};
+    }
+
+    return {
+        list: state.list
+    };
+}
+
+export default connect(mapStateToProps)(ThreadList);

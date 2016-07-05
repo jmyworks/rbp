@@ -7,27 +7,29 @@
 */
 
 import React from 'react';
-import ThreadsActions from '../../../actions/ThreadsActions.js';
-import ThreadsStore from '../../../stores/ThreadsStore.js';
-import Reflux from 'Reflux';
+import {connect} from 'react-redux';
+import DiscussActions from '../../../actions/DiscussActions.js';
+
 import serialize from 'form-serialize';
-import {Navigation} from 'react-router';
 
 var CreateThread = React.createClass({
-    mixins: [Reflux.connect(ThreadsStore), Navigation],
+    contextTypes: {
+        router: React.PropTypes.object
+    },
     handleCreateThread: function(evt) {
         evt.preventDefault();
 
         var form = document.querySelector('#createThread');
         var params = serialize(form, {hash: true});
 
-        ThreadsActions.createThread(params, (error, id) => {
-            if (!error) {
-                this.transitionTo('/Discuss/Thread/' + id);
-            }
-        });
+        const {dispatch} = this.props;
+        dispatch(DiscussActions.createThread(params));
     },
     render: function() {
+        if (this.props.id) {
+            this.context.router.push('/Discuss/Thread/' + this.props.id);
+        }
+
         return (
             <div>
                 <form id="createThread">
@@ -40,4 +42,12 @@ var CreateThread = React.createClass({
     }
 });
 
-export default CreateThread;
+function mapStateToProps(state) {
+    if (state !== undefined && state.id !== undefined) {
+        return {id: state.id};
+    }
+
+    return {};
+}
+
+export default connect(mapStateToProps)(CreateThread);

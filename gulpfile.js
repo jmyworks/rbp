@@ -11,11 +11,15 @@ var gulpLoadPlugins = require('gulp-load-plugins');
 var del = require('del');
 var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
-var webpack = require('webpack');
+var webpack = require('webpack-stream');
 var _ = require('lodash');
 
 var $ = gulpLoadPlugins();
 var nodemon = null;
+
+var dev_mode = true;
+var webpack_debug = require('./webpack.dev.config.js');
+var webpack_release = require('./webpack.config.js');
 
 var unhandled_resources = [
     'src/client/app_loader.html',
@@ -31,16 +35,14 @@ var client_scripts = [
 ];
 
 var server_scripts = [
-    'src/server/**/*.js',
+    'src/server/**/*.js'
 ];
 
-process.env.release = false;
-
 // default
-gulp.task('default', ['proxy']);
+gulp.task('default', ['build:dev']);
 
 // release
-gulp.task('release', ['build']);
+gulp.task('release', ['build:release']);
 
 // clean
 gulp.task('clean', function() {
@@ -68,48 +70,40 @@ gulp.task('server_scripts', function() {
 });
 
 // bundle
-gulp.task('bundle', function(cb) {
-    var config = require('./webpack.config.js');
-    var verbose = false;
+gulp.task('bundle:dev', function(cb) {
+    return gulp.src('src/app.js')
+        .pipe(webpack(webpack_debug))
+        .pipe(gulp.dest('build/public'));
+});
 
-    webpack(config, function(err, stats) {
-        if(err) {
-            throw new $.util.PluginError("bundle", err);
-        }
-
-        $.util.log("[bundle]", stats.toString({
-            colors: $.util.colors.supportsColor,
-            hash: verbose,
-            version: verbose,
-            timings: verbose,
-            chunks: verbose,
-            chunkModules: verbose,
-            cached: verbose,
-            cachedAssets: verbose
-        }));
-
-        return cb();
-    });
+gulp.task('bundle:release', function(cb) {
+    return gulp.src('src/app.js')
+        .pipe(webpack(webpack_release))
+        .pipe(gulp.dest('build/public'));
 });
 
 // build
 // common_scripts and server_scripts MUST NOT run async
-gulp.task('build', ['clean'], function(cb) {
-    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'bundle', cb);
+gulp.task('build:dev', ['clean'], function(cb) {
+    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'proxy', 'bundle:dev', cb);
+});
+
+gulp.task('build:release', ['clean'], function(cb) {
+    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'bundle:release', cb);
 });
 
 // watch
-gulp.task('watch', ['build'], function() {
-    gulp.watch(client_scripts, function() {
-        runSequence('build', 'reload');
+gulp.task('watch', function() {
+    gulp.watch(_.union(client_scripts, common_scripts), function() {
+        runSequence('bundle:dev', 'reload');
     });
 
     gulp.watch(unhandled_resources, function() {
         runSequence('unhandled_resources', 'reload');
     });
 
-    gulp.watch(_.union(server_scripts, common_scripts), function() {
-        runSequence('build', 'reload');
+    gulp.watch(server_scripts, function() {
+        runSequence('server_scripts', 'reload');
     })
 });
 
@@ -126,12 +120,11 @@ gulp.task('serve', ['watch'], function() {
         script: 'build/server/server.js',
         env: {'NODE_ENV': process.env.release ? 'production' : 'development'},
         watch: ['src/invalidfile']
-    })
-        .on('restart', function() {
-            setTimeout(function() {
-                browserSync.reload();
-            }, 2000);
-        });
+    }).on('restart', function() {
+        setTimeout(function() {
+            browserSync.reload();
+        }, 2000);
+    });
 });
 
 // proxy

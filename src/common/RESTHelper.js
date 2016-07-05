@@ -224,5 +224,20 @@ var RESTHelper = {
 module.exports = {
     parseAPIs: RESTHelper.parseAPIs,
     serverResponse: RESTHelper.serverResponse,
-    clientRequest: RESTHelper.clientRequest
+    clientRequest: RESTHelper.clientRequest,
+    getPromise: (config, API) => {
+        return (params) => {
+            var promise = new Promise((resolve, reject) => {
+                RESTHelper.clientRequest(config, API, params, (error, data) => {
+                    if (error instanceof Error) {
+                        reject(error);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            });
+
+            return promise;
+        };
+    }
 };

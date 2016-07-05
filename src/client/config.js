@@ -12,7 +12,7 @@ var config = {
             {module: 'timeout', config: {timeout: 1000}}
         ],
         config: {
-            baseUrl: 'http://1.1.3.6:3000/api/'
+            baseUrl: '/api/'
         }
     }
 };

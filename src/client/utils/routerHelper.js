@@ -37,7 +37,7 @@ var routerHelper = (options = {match: '', path: '', index: null, children: []}) 
     };
 
     let getComponentsFunc = (_relative) => {
-        return (cb) => {
+        return (nextState, cb) => {
             require.ensure([], (require) => {
                 if (!isRoot) {
                     cb(null, require('../components/' + _relative + '/view.js'));
@@ -47,7 +47,7 @@ var routerHelper = (options = {match: '', path: '', index: null, children: []}) 
     };
 
     let getIndexRouteFunc = (_relative, _index) => {
-        return _index ? (cb) => {
+        return _index ? (partialNextState, cb) => {
             require.ensure([], (require) => {
                 if (!isRoot) {
                     cb(null, require('../components/' + _relative + '/' + _index + '/route.js'));

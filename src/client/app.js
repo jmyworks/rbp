@@ -7,9 +7,12 @@
 */
 
 import React from 'react';
-import BrowserHistory from 'react-router/lib/BrowserHistory';
-import {Router} from 'react-router';
-import AsyncProps from 'react-router/lib/experimental/AsyncProps';
+import ReactDOM from 'react-dom';
+import {createStore, applyMiddleware} from 'redux';
+import {Provider} from 'react-redux';
+import promiseMiddleware from 'redux-promise';
+import discussReducers from './reducers/DiscussReducers';
+import {Router, browserHistory} from 'react-router';
 import routerHelper from './utils/routerHelper.js';
 import Header from './components/Header.js';
 import Footer from './components/Footer.js';
@@ -20,7 +23,7 @@ var rootRoute = routerHelper({
     match: '',
     path: '',
     children: [
-        'Index', 'Document', 'Download', 'Discuss', 'About'
+        'Index', 'Discuss', 'Document', 'Download', 'About'
     ]
 });
 
@@ -40,9 +43,19 @@ var app = React.createClass({
 
 rootRoute.component = app;
 
-React.render((
+var configureStore = (initialState) => {
+    return createStore(
+        discussReducers,
+        initialState,
+        applyMiddleware(promiseMiddleware));
+};
+
+const store = configureStore();
+
+ReactDOM.render((
+    <Provider store={store}>
         <Router
             children={rootRoute}
-            history={new BrowserHistory()}
-            createElement={AsyncProps.createElement} />
-    ), document.getElementsByTagName('body')[0]);
+            history={browserHistory} />
+    </Provider>
+), document.getElementById('app-container'));

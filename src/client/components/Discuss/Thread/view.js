@@ -7,9 +7,9 @@
  */
 
 import React from 'react';
-import ThreadsActions from '../../../actions/ThreadsActions.js';
-import ThreadsStore from '../../../stores/ThreadsStore.js';
-import Reflux from 'Reflux';
+import {connect} from 'react-redux';
+import DiscussActions from '../../../actions/DiscussActions.js';
+
 import _ from 'lodash';
 
 var Post = React.createClass({
@@ -21,26 +21,23 @@ var Post = React.createClass({
 });
 
 var Thread = React.createClass({
-    mixins: [Reflux.connect(ThreadsStore)],
     componentDidMount: function() {
-        var id = this.props.routeParams.id;
-        ThreadsActions.getThread(id, (error, data) => {
-            if (!error) {
-                this.setState(data);
-            }
-        });
+        var id = this.props.params.id;
+        const {dispatch} = this.props;
+
+        dispatch(DiscussActions.getThread({id}));
     },
     render: function () {
-        if (!this.state.id) {
+        if (!this.props.id) {
             return <div></div>;
         }
 
         return (
             <div>
-                <h2>{this.state.title}</h2>
-                <p>{this.state.content}</p>
+                <h2>{this.props.title}</h2>
+                <p>{this.props.content}</p>
                 <ul>
-                    {_.map(this.state.posts, (post) => {
+                    {_.map(this.props.posts, (post) => {
                         return <Post key={post.id} id={post.id} content={post.content} />;
                     })}
                 </ul>
@@ -49,4 +46,17 @@ var Thread = React.createClass({
     }
 });
 
-export default Thread;
+function mapStateToProps(state) {
+    if (state !== undefined && state.id !== undefined) {
+        return {
+            id: state.id,
+            title: state.title,
+            content: state.content,
+            posts: [].concat(state.posts)
+        };
+    }
+
+    return {};
+}
+
+export default connect(mapStateToProps)(Thread);

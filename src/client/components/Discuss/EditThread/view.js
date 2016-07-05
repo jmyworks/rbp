@@ -6,37 +6,30 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-import React from 'react/addons.js';
-import ThreadsActions from '../../../actions/ThreadsActions.js';
-import ThreadsStore from '../../../stores/ThreadsStore.js';
-import Reflux from 'Reflux';
+import React from 'react';
+import {connect} from 'react-redux';
+import DiscussActions from '../../../actions/DiscussActions.js';
+
 import serialize from 'form-serialize';
-import {Navigation} from 'react-router';
 
 var EditThread = React.createClass({
-    mixins: [Reflux.connect(ThreadsStore), Navigation, React.addons.LinkedStateMixin],
     handleUpdateThread: function(evt) {
         evt.preventDefault();
 
         var form = document.querySelector('#updateThread');
         var params = serialize(form, {hash: true});
 
-        ThreadsActions.updateThread(this.props.routeParams.id, params, (error, id) => {
-            if (!error) {
-                this.transitionTo('/Discuss/Thread/' + id);
-            }
-        });
+        const {dispatch} = this.props;
+        dispatch(DiscussActions.updateThread(params));
     },
     componentDidMount: function() {
-        var id = this.props.routeParams.id;
-        ThreadsActions.getThread(id, (error, data) => {
-            if (!error) {
-                this.setState(data);
-            }
-        });
+        var id = this.props.params.id;
+        var dispatch = this.props.dispatch;
+
+        dispatch(DiscussActions.getThread({id}));
     },
     render: function() {
-        if (!this.state.id) {
+        if (!this.props.id) {
             return <div></div>;
         }
 
@@ -52,4 +45,16 @@ var EditThread = React.createClass({
     }
 });
 
-export default EditThread;
+function mapStateToProps(state) {
+    if (state !== undefined && state.id !== undefined) {
+        return {
+            id: state.id,
+            title: state.title,
+            content: state.content
+        };
+    }
+
+    return {};
+}
+
+export default connect(mapStateToProps)(EditThread);
