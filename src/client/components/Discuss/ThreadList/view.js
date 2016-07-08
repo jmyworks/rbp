@@ -25,22 +25,13 @@ var ThreadItem = React.createClass({
 });
 
 var ThreadList = React.createClass({
-    handleDeleteThread: function () {
-        // var thisArg = this;
-        // ThreadsActions.deleteThread(id, (error, success) => {
-        //     if (!error && success === true) {
-        //         // refresh page
-        //         ThreadsActions.getThreads((_error, _data) => {
-        //             if (!_error) {
-        //                 thisArg.setState({list: _data});
-        //             }
-        //         });
-        //     }
-        // });
-    },
     componentDidMount() {
         const {dispatch} = this.props;
         dispatch(DiscussActions.getThreads());
+    },
+    handleDeleteThread(id) {
+        const {dispatch} = this.props;
+        dispatch(DiscussActions.deleteThread({id}));
     },
     render: function () {
         if (!this.props.list) {

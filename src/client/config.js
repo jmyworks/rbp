@@ -12,7 +12,7 @@ var config = {
             {module: 'timeout', config: {timeout: 1000}}
         ],
         config: {
-            baseUrl: '/api/'
+            baseUrl: 'http://localhost:8000/api/'
         }
     }
 };

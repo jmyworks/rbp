@@ -18,7 +18,7 @@ var Header = React.createClass({
                    <Link to="/Document" className="nav document">Document</Link>
                    <Link to="/Download" className="nav download">Download</Link>
                    <Link to="/Discuss"className="nav discuss">Discuss</Link>
-                   <Link to="/About" className="nav about">About xx</Link>
+                   <Link to="/About" className="nav about">About</Link>
                </nav>
            </div>
        );

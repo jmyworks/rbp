@@ -10,14 +10,18 @@ var gulp = require('gulp');
 var gulpLoadPlugins = require('gulp-load-plugins');
 var del = require('del');
 var runSequence = require('run-sequence');
-var browserSync = require('browser-sync').create();
-var webpack = require('webpack-stream');
+var webpack = require('webpack');
 var _ = require('lodash');
+var path = require('path');
+var fs = require('fs');
+var nodemon = require('gulp-nodemon');
+var spawn = require('child_process').spawn;
 
 var $ = gulpLoadPlugins();
-var nodemon = null;
 
-var dev_mode = true;
+var apiServer = null;
+var resourceServer = null;
+
 var webpack_debug = require('./webpack.dev.config.js');
 var webpack_release = require('./webpack.config.js');
 
@@ -71,21 +75,37 @@ gulp.task('server_scripts', function() {
 
 // bundle
 gulp.task('bundle:dev', function(cb) {
-    return gulp.src('src/app.js')
-        .pipe(webpack(webpack_debug))
-        .pipe(gulp.dest('build/public'));
+    // webpack server will do it
+    return cb();
 });
 
 gulp.task('bundle:release', function(cb) {
-    return gulp.src('src/app.js')
-        .pipe(webpack(webpack_release))
-        .pipe(gulp.dest('build/public'));
+    var verbose = true;
+
+    webpack(webpack_release, function(err, stats) {
+        if(err) {
+            throw new $.util.PluginError("bundle:release", err);
+        }
+
+        $.util.log("[bundle:release]", stats.toString({
+            colors: true,
+            hash: verbose,
+            version: verbose,
+            timings: verbose,
+            chunks: verbose,
+            chunkModules: verbose,
+            cached: verbose,
+            cachedAssets: verbose
+        }));
+
+        return cb();
+    });
 });
 
 // build
 // common_scripts and server_scripts MUST NOT run async
 gulp.task('build:dev', ['clean'], function(cb) {
-    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'proxy', 'bundle:dev', cb);
+    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'bundle:dev', 'serve', cb);
 });
 
 gulp.task('build:release', ['clean'], function(cb) {
@@ -94,49 +114,59 @@ gulp.task('build:release', ['clean'], function(cb) {
 
 // watch
 gulp.task('watch', function() {
-    gulp.watch(_.union(client_scripts, common_scripts), function() {
-        runSequence('bundle:dev', 'reload');
-    });
-
     gulp.watch(unhandled_resources, function() {
         runSequence('unhandled_resources', 'reload');
     });
-
-    gulp.watch(server_scripts, function() {
-        runSequence('server_scripts', 'reload');
-    })
 });
 
 // reload
 gulp.task('reload', function() {
-    if (nodemon) {
-        nodemon.restart();
-    }
+    // TODO
 });
 
-// serve
-gulp.task('serve', ['watch'], function() {
-    nodemon = $.nodemon({
-        script: 'build/server/server.js',
-        env: {'NODE_ENV': process.env.release ? 'production' : 'development'},
-        watch: ['src/invalidfile']
-    }).on('restart', function() {
-        setTimeout(function() {
-            browserSync.reload();
-        }, 2000);
+gulp.task('serve', ['resource:serve', 'api:serve']);
+
+// api:serve
+gulp.task('api:serve', function(cb) {
+    // apiServer = new nodemon({
+    //     script: 'build/server/APIServer.js',
+    //     env: {'NODE_ENV': "development"},
+    //     watch: ['src/invalidfile']
+    // });
+
+    apiServer = spawn('node', ['./build/server/APIServer.js']);
+
+    apiServer.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
     });
+
+    apiServer.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    apiServer.on('close', (code) => {
+        console.log(`API Server exited with code ${code}`);
+    });
+
+    cb();
 });
 
-// proxy
-gulp.task('proxy', ['serve'], function() {
-    browserSync.init({
-        proxy: "localhost:5000",
-        online: true,
-        reloadOnRestart: true,
-        notify: true,
-        scrollProportionally: false,
-        //injectChanges: false,
-        minify: false,
-        open: false
+// resource:serve
+gulp.task('resource:serve', ['watch'], function(cb) {
+    resourceServer = spawn('node', ['./build/server/ResourceServer.js']);
+
+    resourceServer.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
     });
+
+    resourceServer.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    resourceServer.on('close', (code) => {
+        console.log(`Resource Server exited with code ${code}`);
+    });
+
+    cb();
 });
+

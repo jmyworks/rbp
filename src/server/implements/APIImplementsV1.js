@@ -43,7 +43,7 @@ module.exports = {
             if (error) {
                 cb(new Error('Database Error:' + error));
             } else {
-                cb(true);
+                cb(params.id);
             }
         });
     },

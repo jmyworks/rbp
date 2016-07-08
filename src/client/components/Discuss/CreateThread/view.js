@@ -16,6 +16,11 @@ var CreateThread = React.createClass({
     contextTypes: {
         router: React.PropTypes.object
     },
+    componentWillReceiveProps: function(nextProps) {
+        if (nextProps.id) {
+            this.context.router.push('/Discuss/Thread/' + nextProps.id);
+        }
+    },
     handleCreateThread: function(evt) {
         evt.preventDefault();
 
@@ -26,10 +31,6 @@ var CreateThread = React.createClass({
         dispatch(DiscussActions.createThread(params));
     },
     render: function() {
-        if (this.props.id) {
-            this.context.router.push('/Discuss/Thread/' + this.props.id);
-        }
-
         return (
             <div>
                 <form id="createThread">

@@ -47,13 +47,9 @@ var Thread = React.createClass({
 });
 
 function mapStateToProps(state) {
-    if (state !== undefined && state.id !== undefined) {
-        return {
-            id: state.id,
-            title: state.title,
-            content: state.content,
-            posts: [].concat(state.posts)
-        };
+    if (state !== undefined && state.thread !== undefined) {
+
+        return {...state.thread};
     }
 
     return {};

@@ -27,7 +27,7 @@ var DiscussAPI = [
             return: 'Integer'
         },
         delete: {   // deleteThread
-            return: 'Boolean'
+            return: 'Integer'
         }
     }
 ];

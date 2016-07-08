@@ -42,8 +42,8 @@ var RESTHelper = {
         })).then((response) => {
             var result = JSON.parse(response.entity);
 
-            if (result instanceof Error) {
-                callback(result, null);
+            if (response.status.code === 500) {
+                callback(new Error(result.message), null);
             } else {
                 callback(null, result);
             }
@@ -230,7 +230,7 @@ module.exports = {
             var promise = new Promise((resolve, reject) => {
                 RESTHelper.clientRequest(config, API, params, (error, data) => {
                     if (error instanceof Error) {
-                        reject(error);
+                        reject(error.message);
                     } else {
                         resolve(data);
                     }

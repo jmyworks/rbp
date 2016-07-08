@@ -12,10 +12,10 @@ var minimist = require("minimist");
 
 module.exports = {
     entry: [
-        'webpack/hot/dev-server',
         'webpack-hot-middleware/client',
+        'webpack/hot/only-dev-server',
         'babel-core/polyfill',
-        './src/client/app.js'],
+        './src/client/client.js'],
     output: {
         path: path.join(__dirname, "build", "public"),
         filename: "app.js",
@@ -57,7 +57,7 @@ module.exports = {
             },
             {
                 test: /\.jsx?$/,
-                loaders: ['babel?cacheDirectory=true'],
+                loaders: ['react-hot', 'babel?cacheDirectory=true'],
                 include: [path.join(__dirname, 'src', 'client'), path.join(__dirname, 'src', 'common')]
             }
         ]

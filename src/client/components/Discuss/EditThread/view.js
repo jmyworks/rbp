@@ -9,10 +9,19 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import DiscussActions from '../../../actions/DiscussActions.js';
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
+import UIActions from '../../../actions/UIActions';
 
 import serialize from 'form-serialize';
 
 var EditThread = React.createClass({
+    componentDidMount: function() {
+        var id = this.props.params.id;
+        var dispatch = this.props.dispatch;
+
+        dispatch(DiscussActions.getThread({id}));
+    },
     handleUpdateThread: function(evt) {
         evt.preventDefault();
 
@@ -20,13 +29,9 @@ var EditThread = React.createClass({
         var params = serialize(form, {hash: true});
 
         const {dispatch} = this.props;
-        dispatch(DiscussActions.updateThread(params));
-    },
-    componentDidMount: function() {
-        var id = this.props.params.id;
-        var dispatch = this.props.dispatch;
+        dispatch(DiscussActions.updateThread({...params, id: this.props.id}));
 
-        dispatch(DiscussActions.getThread({id}));
+        return false;
     },
     render: function() {
         if (!this.props.id) {
@@ -36,9 +41,23 @@ var EditThread = React.createClass({
         return (
             <div>
                 <form id="updateThread">
-                    <input type="text" name="title" valueLink={this.linkState('title')} />
-                    <textarea name="content" cols="30" rows="10" valueLink={this.linkState('content')}></textarea>
-                    <input type="submit" value="submit" onClick={this.handleUpdateThread} />
+                    <TextField
+                        hintText="title"
+                        floatingLabelText="Title"
+                        value={this.props.title}
+                        name="title"
+                        onChange={(event) => {this.props.dispatch(UIActions.inputChanged('thread.title', event.target.value)); }}
+                    /><br />
+                    <TextField
+                        multiLine={true}
+                        rows={5}
+                        hintText="title"
+                        floatingLabelText="Content"
+                        value={this.props.content}
+                        name="content"
+                        onChange={(event) => {this.props.dispatch(UIActions.inputChanged('thread.content', event.target.value)); }}
+                    /><br />
+                    <FlatButton label="Submit" type="submit" onClick={this.handleUpdateThread} />
                 </form>
             </div>
         );
@@ -46,12 +65,8 @@ var EditThread = React.createClass({
 });
 
 function mapStateToProps(state) {
-    if (state !== undefined && state.id !== undefined) {
-        return {
-            id: state.id,
-            title: state.title,
-            content: state.content
-        };
+    if (state !== undefined && state.thread !== undefined) {
+        return {...state.thread};
     }
 
     return {};
