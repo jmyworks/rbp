@@ -7,8 +7,29 @@
 */
 
 import ThreadModel from '../models/ThreadModel';
+import BookModel from '../models/BookModel';
 
 module.exports = {
+    getBooks: function(params, cb) {
+        BookModel.find({}, (error, docs) => {
+            if (error) {
+                cb(new Error('Database Error:' + error));
+            } else {
+                cb(docs);
+            }
+        });
+    },
+    addBook: function (params, cb) {
+        var book = new BookModel(params);
+
+        book.save(function(error, doc) {
+            if (error) {
+                cb(new Error('Database Error:' + error));
+            } else {
+                cb(doc.id.toString());
+            }
+        });
+    },
     getThreads: function(params, cb) {
         ThreadModel.find({}, (error, docs) => {
             if (error) {

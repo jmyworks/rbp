@@ -21,6 +21,7 @@ var $ = gulpLoadPlugins();
 
 var apiServer = null;
 var resourceServer = null;
+var fileServer = null;
 
 var webpack_debug = require('./webpack.dev.config.js');
 var webpack_release = require('./webpack.config.js');
@@ -124,7 +125,26 @@ gulp.task('reload', function() {
     // TODO
 });
 
-gulp.task('serve', ['resource:serve', 'api:serve']);
+gulp.task('serve', ['resource:serve', 'api:serve', 'file:serve']);
+
+//file:serve
+gulp.task('file:serve', function (cb) {
+    fileServer = spawn('node', ['./build/server/FileServer.js']);
+
+    fileServer.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    fileServer.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+    });
+
+    fileServer.on('close', (code) => {
+        console.log(`File Server exited with code ${code}`);
+    });
+
+    cb();
+});
 
 // api:serve
 gulp.task('api:serve', function(cb) {

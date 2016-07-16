@@ -12,6 +12,7 @@ import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import promiseMiddleware from 'redux-promise';
 import discussReducers from './reducers/DiscussReducers';
+import BookReducers from './reducers/BookReducers';
 import UIReducers from './reducers/UIReducers';
 import {Router, browserHistory} from 'react-router';
 import {handleActions} from 'redux-actions';
@@ -21,7 +22,7 @@ import 'normalize.css/normalize.css';
 
 var configureStore = (initialState) => {
     return createStore(
-        handleActions({...discussReducers, ...UIReducers}),
+        handleActions({...discussReducers, ...BookReducers, ...UIReducers}),
         initialState,
         applyMiddleware(promiseMiddleware));
 };

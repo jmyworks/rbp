@@ -12,6 +12,7 @@ import DiscussActions from '../../../actions/DiscussActions.js';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import UIActions from '../../../actions/UIActions';
+import utils from '../../../utils/utils';
 
 import serialize from 'form-serialize';
 
@@ -46,7 +47,7 @@ var EditThread = React.createClass({
                         floatingLabelText="Title"
                         value={this.props.title}
                         name="title"
-                        onChange={(event) => {this.props.dispatch(UIActions.inputChanged('thread.title', event.target.value)); }}
+                        onChange={(event) => {this.props.dispatch(UIActions.inputChanged('discuss.thread.title', event.target.value)); }}
                     /><br />
                     <TextField
                         multiLine={true}
@@ -55,7 +56,7 @@ var EditThread = React.createClass({
                         floatingLabelText="Content"
                         value={this.props.content}
                         name="content"
-                        onChange={(event) => {this.props.dispatch(UIActions.inputChanged('thread.content', event.target.value)); }}
+                        onChange={(event) => {this.props.dispatch(UIActions.inputChanged('discuss.thread.content', event.target.value)); }}
                     /><br />
                     <FlatButton label="Submit" type="submit" onClick={this.handleUpdateThread} />
                 </form>
@@ -65,11 +66,9 @@ var EditThread = React.createClass({
 });
 
 function mapStateToProps(state) {
-    if (state !== undefined && state.thread !== undefined) {
-        return {...state.thread};
-    }
+    var thread = utils.filterState(state, 'discuss.thread', {});
 
-    return {};
+    return {...thread};
 }
 
 export default connect(mapStateToProps)(EditThread);

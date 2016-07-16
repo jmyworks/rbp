@@ -9,6 +9,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import DiscussActions from '../../../actions/DiscussActions.js';
+import utils from '../../../utils/utils';
 
 import _ from 'lodash';
 
@@ -47,12 +48,9 @@ var Thread = React.createClass({
 });
 
 function mapStateToProps(state) {
-    if (state !== undefined && state.thread !== undefined) {
+    var thread = utils.filterState(state, 'discuss.thread', {});
 
-        return {...state.thread};
-    }
-
-    return {};
+    return {...thread};
 }
 
 export default connect(mapStateToProps)(Thread);

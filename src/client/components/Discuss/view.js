@@ -13,7 +13,7 @@ var Discuss = React.createClass({
     render: function() {
         return (
             <div>
-                <h1>Discuss Anything about react-ready</h1>
+                <h1>Discuss</h1>
                 <p><Link to="/Discuss/CreateThread">New Post</Link></p>
                 {this.props.children}
             </div>

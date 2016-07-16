@@ -7,20 +7,23 @@
 */
 
 import React from 'react';
-import Link from 'react-router/lib/Link.js';
+import AppBar from 'material-ui/AppBar';
+import {Tabs, Tab} from 'material-ui/Tabs';
 
 var Header = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.object
+    },
    render: function() {
        return (
-           <div>
-               <nav>
-                   <Link to="/" className="nav home">Home</Link>
-                   <Link to="/Document" className="nav document">Document</Link>
-                   <Link to="/Download" className="nav download">Download</Link>
-                   <Link to="/Discuss"className="nav discuss">Discuss</Link>
-                   <Link to="/About" className="nav about">About</Link>
-               </nav>
-           </div>
+           <AppBar title="" showMenuIconButton={false} style={{flexWrap: 'wrap'}} titleStyle={{height: '48px', lineHeight: '48px'}}>
+               <Tabs style={{width: '30%'}}>
+                   <Tab label="Home" onActive={() => {this.context.router.push('/'); }} />
+                   <Tab label="Book" onActive={() => {this.context.router.push('/Book'); }} />
+                   <Tab label="Discuss" onActive={() => {this.context.router.push('/Discuss'); }} />
+                   <Tab label="About" onActive={() => {this.context.router.push('/About'); }} />
+               </Tabs>
+           </AppBar>
        );
    }
 });

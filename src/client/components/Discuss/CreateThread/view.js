@@ -9,6 +9,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import DiscussActions from '../../../actions/DiscussActions.js';
+import utils from '../../../utils/utils';
 
 import serialize from 'form-serialize';
 
@@ -44,11 +45,9 @@ var CreateThread = React.createClass({
 });
 
 function mapStateToProps(state) {
-    if (state !== undefined && state.id !== undefined) {
-        return {id: state.id};
-    }
+    var id = utils.filterState(state, 'discuss.createdThread.id');
 
-    return {};
+    return {id};
 }
 
 export default connect(mapStateToProps)(CreateThread);

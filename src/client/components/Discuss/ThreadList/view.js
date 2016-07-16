@@ -11,6 +11,7 @@ import {connect} from 'react-redux';
 import Link from 'react-router/lib/Link.js';
 import DiscussActions from '../../../actions/DiscussActions.js';
 import _ from 'lodash';
+import utils from '../../../utils/utils';
 
 var ThreadItem = React.createClass({
     render: function () {
@@ -49,13 +50,9 @@ var ThreadList = React.createClass({
 });
 
 function mapStateToProps(state) {
-    if (state === undefined) {
-        state = {list: []};
-    }
+    var list = utils.filterState(state, 'discuss.threads', []);
 
-    return {
-        list: state.list
-    };
+    return {list};
 }
 
 export default connect(mapStateToProps)(ThreadList);

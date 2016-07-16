@@ -3,15 +3,20 @@
  */
 
 import UIActions from '../actions/UIActions';
-import _ from 'lodash';
+import utils from '../utils/utils';
 
 const UIReducers = {
     [UIActions.inputChanged]: (state, action) => {
         var {hash, value} = action.payload;
-        var newState = {...state};
 
-        _.set(newState, hash, value);
-        return newState;
+        return utils.createState(state, hash, value);
+    },
+    [UIActions.switchError]: (state, action) => {
+        if (action.payload) {
+            return state;
+        }
+
+        return utils.createState(state, 'error.message', undefined);
     }
 };
 

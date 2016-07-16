@@ -14,7 +14,8 @@ var config = {
         config: {
             baseUrl: 'http://localhost:8000/api/'
         }
-    }
+    },
+    fileServer: 'http://localhost:9000/upload/'
 };
 
 export default config;

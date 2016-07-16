@@ -24,15 +24,20 @@ module.exports = {
     module: {
         preLoaders: [
             {
-                test: /\.js/,
+                test: /\.js$/,
                 exclude: /node_module/,
                 loader: "eslint"
             }
         ],
         loaders: [
             {
-                test: /\.css/,
-                exclude: /\.useable\.css$/,
+                test: /\.css$/,
+                loader: 'style!css?modules',
+                include: /flexboxgrid/
+            },
+            {
+                test: /\.css$/,
+                exclude: [/\.useable\.css$/, /flexboxgrid/],
                 loader: "style!css!autoprefixer"
             },
             {
@@ -40,19 +45,19 @@ module.exports = {
                 loader: "style/useable!css!autoprefixer"
             },
             {
-                test: /\.gif/,
+                test: /\.gif$/,
                 loader: 'url?limit=10000&mimetype=image/gif'
             },
             {
-                test: /\.jpg/,
+                test: /\.jpg$/,
                 loader: 'url?limit=10000&mimetype=image/jpg'
             },
             {
-                test: /\.png/,
+                test: /\.png$/,
                 loader: 'url?limit=10000&mimetype=image/png'
             },
             {
-                test: /\.svg/,
+                test: /\.svg$/,
                 loader: 'url?limit=10000&mimetype=image/svg+xml'
             },
             {

@@ -12,7 +12,7 @@ var Index = React.createClass({
     render: function() {
         return (
             <div>
-                <p>React Ready? Yes!</p>
+                <p>Home</p>
             </div>
         );
     }
