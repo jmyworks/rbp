@@ -9,7 +9,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import DiscussActions from '../../../actions/DiscussActions.js';
-import utils from '../../../utils/utils';
+import utils from '../../../../common/utils';
 
 import _ from 'lodash';
 

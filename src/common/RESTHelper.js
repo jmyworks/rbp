@@ -9,7 +9,8 @@
 import {typeCheck} from 'type-check';
 import _ from 'lodash';
 import paramTypes from './paramTypes';
-import rest from 'rest';
+import request from 'superagent';
+import utils from './utils';
 
 var RESTHelper = {
     clientRequest: function(config, APIDeclare, params, callback) {
@@ -26,30 +27,19 @@ var RESTHelper = {
             return;
         }
 
-        // client
-        var client;
-        // interceptors
-        config.interceptors.forEach((interceptor) => {
-            var module = require('rest/interceptor/' + interceptor.module);
-            client = rest.wrap(module, interceptor.config);
-        });
-
-        // request
-        client(_.merge({}, config.config, {
-            method: APIDeclare.method === 'del' ? 'DELETE' : APIDeclare.method.toUpperCase(),
-            path: config.config.baseUrl + APIDeclare.uri,
-            params: params
-        })).then((response) => {
-            var result = JSON.parse(response.entity);
-
-            if (response.status.code === 500) {
-                callback(new Error(result.message), null);
-            } else {
-                callback(null, result);
-            }
-        }, (response) => {
-            callback(new Error(response.request.method + ' ' + response.request.path + ' failed: ' + response.error));
-        });
+        var method = (APIDeclare.method === 'del' ? 'DELETE' : APIDeclare.method).toLowerCase();
+        var uri = config.baseUrl + APIDeclare.uri;
+        request[method](uri)
+            .type('application/json')
+            .send(params)
+            .accept('json')
+            .end((err, res) => {
+                if (err) {
+                    callback(new Error(method + ' ' + uri + ' failed: ' + err.message));
+                } else {
+                    callback(null, res.body);
+                }
+            });
     },
     serverResponse: function(req, res, APIImplements, APIDeclare) {
         if (!APIImplements.hasOwnProperty(APIDeclare.version)) {
@@ -134,7 +124,7 @@ var RESTHelper = {
                 checkParams: function (params) {
                     // check id
                     if (_.endsWith(meta.uri, ':id')) {
-                        if (!typeCheck('Integer', params.id.toString(), paramTypes)) {
+                        if (!params.id || !typeCheck('Integer', params.id.toString(), paramTypes)) {
                             return 'id';
                         }
                     }
@@ -226,13 +216,29 @@ module.exports = {
     serverResponse: RESTHelper.serverResponse,
     clientRequest: RESTHelper.clientRequest,
     getPromise: (config, API) => {
+        function ErrorWithHash(message, hash) {
+            this.message = message;
+            this.requestHash = hash;
+            this.requestSuccessed = false;
+        }
+
+        ErrorWithHash.prototype.toString = function () {
+            return this.message;
+        };
+
         return (params) => {
+            // get _callback
+            var hash;
+            if (params && params.hasOwnProperty('requestCallback') && typeof params.requestCallback === 'function') {
+                hash = utils.getRequestHash(params.requestCallback);
+            }
+
             var promise = new Promise((resolve, reject) => {
                 RESTHelper.clientRequest(config, API, params, (error, data) => {
                     if (error instanceof Error) {
-                        reject(error.message);
+                        reject(new ErrorWithHash(error.message, hash));
                     } else {
-                        resolve(data);
+                        resolve({data, requestHash: hash, requestSuccessed: true});
                     }
                 });
             });

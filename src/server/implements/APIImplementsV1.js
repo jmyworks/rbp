@@ -26,7 +26,17 @@ module.exports = {
             if (error) {
                 cb(new Error('Database Error:' + error));
             } else {
-                cb(doc.id.toString());
+                var id = doc.id;
+                cb({...params, id});
+            }
+        });
+    },
+    updateBook: function(params, cb) {
+        BookModel.findOneAndUpdate({id: params.id}, params, (error) => {
+            if (error) {
+                cb(new Error('Database Error:' + error));
+            } else {
+                cb(params.id.toString());
             }
         });
     },

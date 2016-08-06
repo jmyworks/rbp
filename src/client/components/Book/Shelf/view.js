@@ -5,7 +5,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import utils from '../../../utils/utils';
+import utils from '../../../../common/utils';
 import BookActions from '../../../actions/BookActions';
 
 var BookItem = React.createClass({
@@ -13,6 +13,7 @@ var BookItem = React.createClass({
         return (
             <li>
                 {this.props.name} by {this.props.author}
+                <ul>{_.map(this.props.resources, (v) => (<li>{v.uri}</li>))}</ul>
             </li>
         );
     }
@@ -33,7 +34,7 @@ var Shelf = React.createClass({
         return (
             <ul>
                 {_.map(this.props.list, (item) => {
-                    return (<BookItem key={item.id} id={item.id} name={item.name} author={item.author}
+                    return (<BookItem key={item.id} id={item.id} name={item.name} author={item.author} resources={item.resources}
                                       handleDeleteThread={this.handleDeleteBook.bind(this, item.id)} />);
                 })}
             </ul>

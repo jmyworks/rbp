@@ -3,7 +3,7 @@
  */
 
 import UIActions from '../actions/UIActions';
-import utils from '../utils/utils';
+import utils from '../../common/utils';
 
 const UIReducers = {
     [UIActions.inputChanged]: (state, action) => {
@@ -17,6 +17,11 @@ const UIReducers = {
         }
 
         return utils.createState(state, 'error.message', undefined);
+    },
+    [UIActions.setState]: (state, action) => {
+        var {path, value} = action.payload;
+
+        return utils.createState(state, 'ui.' + path, value);
     }
 };
 

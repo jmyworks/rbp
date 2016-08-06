@@ -42,7 +42,7 @@ if (1) {
 }
 
 // static handler
-server.use('/static/', express.static(path.join(serverRoot, 'static')));
+server.use('/public/', express.static(path.join(serverRoot, 'public')));
 
 // app.js handler
 server.get('/*.?app.js', function(req, res) {

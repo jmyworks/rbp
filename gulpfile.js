@@ -51,7 +51,7 @@ gulp.task('release', ['build:release']);
 
 // clean
 gulp.task('clean', function() {
-    del.sync(['build/**/*.*', '!build/.git'], {dot: true});
+    del.sync(['build/**/*.*', '!build/.git', '!build/public/upload/**/*.*'], {dot: true});
 });
 
 // unhandled resources

@@ -5,8 +5,6 @@
 import React from 'react';
 import LinearProgress from 'material-ui/LinearProgress';
 import FlatButton from 'material-ui/FlatButton';
-//import Subheader from 'material-ui/Subheader';
-//import Divider from 'material-ui/Divider';
 import _ from 'lodash';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import config from '../config';
@@ -57,9 +55,15 @@ var Uploader = React.createClass({
         this.fileSelector.click();
     },
     handleChange: function () {
+        if (this.props.onChange) {
+            this.props.onChange();
+        }
+
         this.setState({files: this.getFiles()});
     },
     handleUpload: function () {
+        var uploader = this;
+
         _.forEach(_.flatten(_.values(this.state.files)), (file) => {
             var instance = this.fileInstances[file.name];
             var xhr = new XMLHttpRequest();
@@ -77,9 +81,17 @@ var Uploader = React.createClass({
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         instance.setState({progress: 100});
+
+                        if (uploader.props.onUploaded) {
+                            uploader.props.onUploaded(file, JSON.parse(this.response));
+                        }
                     } else {
                         instance.setState({progress: 0});
                         console.log(xhr.statusText + ': ' + this.response);
+
+                        if (uploader.props.onFailed) {
+                            uploader.props.onFailed(file, this.response);
+                        }
                     }
                 }
             };
@@ -107,7 +119,7 @@ var Uploader = React.createClass({
                                 <Col key={ext} xs md>
                                     <Row>
                                         <Col md={12}>
-                                            <h2>{ext}</h2>
+                                            <h2 style={{textAlign: 'left'}}>{ext}</h2>
                                         </Col>
                                     </Row>
                                     <Row>

@@ -6,7 +6,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
 import UIActions from '../actions/UIActions';
-import utils from '../utils/utils';
+import utils from '../../common/utils';
 
 var ErrorTip = React.createClass({
     handleRequestClose: function (reason) {

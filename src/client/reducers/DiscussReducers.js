@@ -3,7 +3,7 @@
  */
 
 import DiscussActions from '../actions/DiscussActions';
-import utils from '../utils/utils';
+import utils from '../../common/utils';
 
 const discussReducers = {
     [DiscussActions.getThreads]: {

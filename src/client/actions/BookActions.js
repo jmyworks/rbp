@@ -11,6 +11,7 @@ const APIDeclares = RESTHelper.parseAPIs(BookAPI);
 
 const DiscussActions = {
     createBook: createAction('CREATE_BOOK', RESTHelper.getPromise(config.restClient, APIDeclares.addBook)),
+    updateBook: createAction('UPDATE_BOOK', RESTHelper.getPromise(config.restClient, APIDeclares.updateBook)),
     getBooks: createAction('GET_BOOKS', RESTHelper.getPromise(config.restClient, APIDeclares.getBooks))
 };
 

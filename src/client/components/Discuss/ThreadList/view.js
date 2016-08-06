@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 import Link from 'react-router/lib/Link.js';
 import DiscussActions from '../../../actions/DiscussActions.js';
 import _ from 'lodash';
-import utils from '../../../utils/utils';
+import utils from '../../../../common/utils';
 
 var ThreadItem = React.createClass({
     render: function () {

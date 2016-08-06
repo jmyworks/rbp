@@ -12,7 +12,7 @@ import DiscussActions from '../../../actions/DiscussActions.js';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import UIActions from '../../../actions/UIActions';
-import utils from '../../../utils/utils';
+import utils from '../../../../common/utils';
 
 import serialize from 'form-serialize';
 

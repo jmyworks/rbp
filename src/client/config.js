@@ -8,12 +8,7 @@
 
 var config = {
     restClient: {
-        interceptors: [
-            {module: 'timeout', config: {timeout: 1000}}
-        ],
-        config: {
-            baseUrl: 'http://localhost:8000/api/'
-        }
+        baseUrl: 'http://localhost:8000/api/'
     },
     fileServer: 'http://localhost:9000/upload/'
 };

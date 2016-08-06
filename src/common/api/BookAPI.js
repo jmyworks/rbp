@@ -12,14 +12,18 @@ var BookAPI = [
         create: { // addBook
             params: {
                 name: 'String',
-                author: 'String'
+                author: 'String',
+                type: 'String'
             },
-            return: 'Integer'
+            return: 'Object'
         },
         show: {  // getBook
             return: 'Object'
         },
         update: {  // updateBook
+            params: {
+                resources: 'Array'
+            },
             return: 'Integer'
         },
         delete: {   // deleteBook

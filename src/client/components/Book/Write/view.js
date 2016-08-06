@@ -5,40 +5,46 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Step, Stepper, StepLabel} from 'material-ui/Stepper';
-import Metadata from './components/Metadata';
+import Metadata from './Metadata';
+import Resources from './Resources';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
+import Pager from 'material-ui/Paper';
+//import Badge from 'material-ui/Badge';
+
 import BookActions from '../../../actions/BookActions';
+import UIActions from '../../../actions/UIActions';
 import serialize from 'form-serialize';
 import ErrorTip from '../../ErrorTip';
-import utils from '../../../utils/utils';
-import Uploader from '../../Uploader';
-import _ from 'lodash';
-
+import utils from '../../../../common/utils';
 
 var Write = React.createClass({
-    getInitialState: function () {
-        return {loading: false, step: 0};
+    contextTypes: {
+        router: React.PropTypes.object
     },
-    componentWillReceiveProps: function (nextProps) {
-        if (nextProps.error) {
-            this.setState({loading: false});
-            return;
+    getDefaultProps: function () {
+        return {step: 0};
+    },
+    componentDidMount: function () {
+        this.resources = [];
+    },
+    handleFileListChange: function () {
+        this.resources = [];
+    },
+    handleFileUploaded: function (file, response) {
+        if (response && response.path) {
+            this.resources.push({uri: '/public/upload/' + response.path});
         }
-
-        if (nextProps.id && this.state.loading) {
-            this.setState({loading: false, step: this.state.step + 1});
-        }
     },
-    handleFiles: function (filesByExt) {
-        var pdf = _.flatten(_.values(_.pick(filesByExt, 'pdf')));
-        var image = _.flatten(_.values(_.pick(filesByExt, ['png', 'jpg'])));
-        var audio = _.flatten(_.values(_.pick(filesByExt, ['mp3', 'mp4'])));
+    handleBindResources: function (event) {
+        event.preventDefault();
 
-        return {pdf, image, audio};
-    },
-    handleUpload: function () {
-        document.querySelector('.uploader').click();
+        console.log(this.resources);
+
+        this.props.dispatch(UIActions.setState('book.write', {'loading': true}));
+        this.props.dispatch(BookActions.updateBook({id: this.props.metadata.id, resources: this.resources,
+            requestCallback: (successed) => {return {'book.write.step': successed ? 2 : 1, 'book.write.loading': false}; }}));
     },
     getStepContent: function(step) {
         switch (step) {
@@ -46,7 +52,7 @@ var Write = React.createClass({
                 return (
                     <Metadata>
                         <div style={{width: '256px', margin: '0 auto', textAlign: 'left'}}>
-                            {this.state.loading ?
+                            {this.props.loading ?
                                 <CircularProgress size="0.5" /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleCreateBook} />}
                             <ErrorTip error={this.props.error} hasAction={true} duration={3500} />
@@ -55,14 +61,21 @@ var Write = React.createClass({
                 );
             case 1:
                 return (
-                    <Uploader style={{maxWidth: '90%'}}
-                              accept="application/pdf,audio/mpeg,audio/mp4"
-                              filter=".pdf,.mp3,.mp4,.png,.jpg"
-                              handleFiles={this.handleFiles}
-                    />
+                    <div>
+                        <RaisedButton style={{position: 'absolute', right: '0px', marginRight: '10px'}} label="Next" primary={true} onClick={this.handleBindResources} />
+                        <Resources onFileUploaded={this.handleFileUploaded} onFileListChange={this.handleFileListChange} />
+                        <ErrorTip error={this.props.error} hasAction={true} duration={3500} />
+                    </div>
                 );
             case 2:
-                return 'complete';
+                return (
+                    <Pager zDepth={0} style={{padding: '10px 20px', textAlign: 'center'}}>
+                        <h2>Congratulations!</h2>
+                        <p>
+                            <FlatButton onClick={() => {this.context.router.push('/Book/Edit/' + this.props.metadata.id); }} secondary={true} label={'「' + this.props.metadata.name + '」'} /><br/><b>write by <i>{this.props.metadata.author}</i></b>
+                        </p>
+                    </Pager>
+                );
             default:
                 throw Error('unknown step during write');
         }
@@ -73,11 +86,12 @@ var Write = React.createClass({
         var form = document.querySelector('#bookMetadata');
         var params = serialize(form, {hash: true});
 
-        this.setState({'loading': true});
-        this.props.dispatch(BookActions.createBook(params));
+        this.props.dispatch(UIActions.setState('book.write', {'loading': true}));
+        this.props.dispatch(BookActions.createBook({...params,
+            requestCallback: (successed) => {return {'book.write.step': successed ? 1 : 0, 'book.write.loading': false}; }}));
     },
     render: function() {
-        var step = this.state.step;
+        var step = this.props.step;
 
         return (
             <div>
@@ -92,8 +106,8 @@ var Write = React.createClass({
                         <StepLabel>Complete</StepLabel>
                     </Step>
                 </Stepper>
-                <div>
-                    <p>{this.getStepContent(step)}</p>
+                <div style={{margin: '0 auto', width: '90%', position: 'relative', textAlign: 'center'}}>
+                    {this.getStepContent(step)}
                 </div>
                 {this.props.children}
             </div>
@@ -103,9 +117,10 @@ var Write = React.createClass({
 
 function mapStateToProps(state) {
     var error = utils.filterState(state, 'error.message');
-    var id = utils.filterState(state, 'book.createdBook.id');
+    var metadata = utils.filterState(state, 'book.metadata');
+    var step = utils.filterState(state, 'book.write.step');
 
-    return {error, id};
+    return {error, metadata, step};
 }
 
 export default connect(mapStateToProps)(Write);

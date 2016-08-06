@@ -3,12 +3,20 @@
  */
 
 import BookActions from '../actions/BookActions';
-import utils from '../utils/utils';
+import utils from '../../common/utils';
 
 const BookReducers = {
     [BookActions.createBook]: {
         next(state, action) {
-            return utils.createState(state, 'book.createdBook.id', action.payload);
+            return utils.createState(state, 'book.metadata', action.payload);
+        },
+        throw(state, action) {
+            return utils.createState(state, 'error.message', action.payload);
+        }
+    },
+    [BookActions.updateBook]: {
+        next(state, action) {
+            return utils.createState(state, 'book.metadata.id', action.payload);
         },
         throw(state, action) {
             return utils.createState(state, 'error.message', action.payload);
