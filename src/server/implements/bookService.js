@@ -6,10 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-import mongoose from 'mongoose';
-import autoIncrement from 'mongoose-auto-increment';
+import db from '../utils/Database';
 
-var mongodb = mongoose.createConnection("mongodb://localhost/test");
-autoIncrement.initialize(mongodb);
+const BookService = db.collection('books');
 
-export default mongodb;
+export default BookService;

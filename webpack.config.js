@@ -11,7 +11,7 @@ var path = require("path");
 var minimist = require("minimist");
 
 module.exports = {
-    entry: ['babel-core/polyfill', './src/client/client.js'],
+    entry: ['./src/client/client.js'],
     output: {
         path: path.join(__dirname, "build", "public"),
         filename: "app.js",

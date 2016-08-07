@@ -19,7 +19,7 @@ var spawn = require('child_process').spawn;
 
 var $ = gulpLoadPlugins();
 
-var apiServer = null;
+var dataServer = null;
 var resourceServer = null;
 var fileServer = null;
 
@@ -125,7 +125,7 @@ gulp.task('reload', function() {
     // TODO
 });
 
-gulp.task('serve', ['resource:serve', 'api:serve', 'file:serve']);
+gulp.task('serve', ['resource:serve', 'data:serve', 'file:serve']);
 
 //file:serve
 gulp.task('file:serve', function (cb) {
@@ -146,26 +146,20 @@ gulp.task('file:serve', function (cb) {
     cb();
 });
 
-// api:serve
-gulp.task('api:serve', function(cb) {
-    // apiServer = new nodemon({
-    //     script: 'build/server/APIServer.js',
-    //     env: {'NODE_ENV': "development"},
-    //     watch: ['src/invalidfile']
-    // });
+// data:serve
+gulp.task('data:serve', function(cb) {
+    dataServer = spawn('node', ['./build/server/DataServer.js']);
 
-    apiServer = spawn('node', ['./build/server/APIServer.js']);
-
-    apiServer.stdout.on('data', (data) => {
+    dataServer.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
     });
 
-    apiServer.stderr.on('data', (data) => {
+    dataServer.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`);
     });
 
-    apiServer.on('close', (code) => {
-        console.log(`API Server exited with code ${code}`);
+    dataServer.on('close', (code) => {
+        console.log(`Data Server exited with code ${code}`);
     });
 
     cb();
