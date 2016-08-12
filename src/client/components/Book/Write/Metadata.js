@@ -6,14 +6,18 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
-var Metadata = React.createClass({
-    getInitialState: function () {
-        return {type: 1};
-    },
-    handleChange: function(event, index, type) {
+class Metadata extends React.Component {
+    constructor() {
+        super();
+        
+        this.state = {type: 1};
+    }
+
+    handleChange(event, index, type) {
         this.setState({type});
-    },
-    render: function () {
+    }
+
+    render() {
         return (
             <form id="bookMetadata" style={{display: 'inline-block'}}>
                 <TextField name="name" hintText="ex. Daily Note" floatingLabelText="Book Name" /><br />
@@ -26,6 +30,6 @@ var Metadata = React.createClass({
             </form>
         );
     }
-});
+}
 
 export default Metadata;

@@ -14,7 +14,6 @@ module.exports = {
     entry: [
         'webpack-hot-middleware/client',
         'webpack/hot/only-dev-server',
-        'babel-core/polyfill',
         './src/client/client.js'],
     output: {
         path: path.join(__dirname, "build", "public"),

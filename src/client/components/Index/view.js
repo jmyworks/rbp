@@ -8,14 +8,14 @@
 
 import React from 'react';
 
-var Index = React.createClass({
-    render: function() {
+class Index extends React.Component {
+    render() {
         return (
             <div>
                 <p>Home</p>
             </div>
         );
     }
-});
+}
 
 export default Index;

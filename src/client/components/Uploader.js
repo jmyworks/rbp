@@ -9,13 +9,16 @@ import _ from 'lodash';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import config from '../config';
 
-var File = React.createClass({
-    getInitialState: function () {
-        return {
+class File extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
             progress: 0
         };
-    },
-    render: function () {
+    }
+
+    render() {
         return (
             <Col xs={12} md={6}>
                 <p style={{textAlign: 'left'}}>{this.props.name}</p>
@@ -23,16 +26,23 @@ var File = React.createClass({
             </Col>
         );
     }
-});
+}
 
-var Uploader = React.createClass({
-    getInitialState: function () {
+class Uploader extends React.Component {
+    constructor(props) {
+        super(props);
+
         this.fileSelector = null;
         this.fileInstances = {};
 
-        return {files: []};
-    },
-    getFiles: function () {
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
+        this.handleUpload = this.handleUpload.bind(this);
+
+        this.state = {files: []};
+    }
+
+    getFiles() {
         var filesByExt = {};
         var pattern = new RegExp('\\.(' + this.props.filter.replace(/\./g, '').replace(/,/g, '|') + ')$', 'i');
         _.forEach(this.fileSelector.files, (f) => {
@@ -50,22 +60,30 @@ var Uploader = React.createClass({
         }
 
         return filesByExt;
-    },
-    handleSelect: function () {
+    }
+
+    handleSelect() {
         this.fileSelector.click();
-    },
-    handleChange: function () {
+    }
+
+    handleChange() {
         if (this.props.onChange) {
             this.props.onChange();
         }
 
         this.setState({files: this.getFiles()});
-    },
-    handleUpload: function () {
+    }
+
+    handleUpload() {
         var uploader = this;
 
         _.forEach(_.flatten(_.values(this.state.files)), (file) => {
             var instance = this.fileInstances[file.name];
+
+            if (instance.state.progress !== 0) {
+                return;
+            }
+
             var xhr = new XMLHttpRequest();
             var fd = new FormData();
 
@@ -100,10 +118,11 @@ var Uploader = React.createClass({
 
             xhr.send(fd);
         });
-    },
-    render: function () {
+    }
+
+    render() {
         return (
-            <Grid fluid style={{...this.props.style}}>
+            <Grid fluid style={this.props.style}>
                 <Row>
                     <Col>
                         <FlatButton label="Select" onClick={this.handleSelect} />
@@ -133,6 +152,6 @@ var Uploader = React.createClass({
             </Grid>
         );
     }
-});
+}
 
 export default Uploader;

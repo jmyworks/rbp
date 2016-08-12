@@ -40,7 +40,8 @@ var routerHelper = (options = {match: '', path: '', index: null, children: []}) 
         return (nextState, cb) => {
             require.ensure([], (require) => {
                 if (!isRoot) {
-                    cb(null, require('../components/' + _relative + '/view.js'));
+                    var view = require('../components/' + _relative + '/view.js').default;
+                    cb(null, view);
                 }
             });
         };

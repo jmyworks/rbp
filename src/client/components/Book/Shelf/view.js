@@ -3,49 +3,42 @@
  */
 
 import React from 'react';
-import {connect} from 'react-redux';
-import _ from 'lodash';
-import utils from '../../../../common/utils';
-import BookActions from '../../../actions/BookActions';
+import {inject, observer} from 'mobx-react';
 
-var BookItem = React.createClass({
-    render: function () {
+class BookItem extends React.Component {
+    render() {
         return (
             <li>
                 {this.props.name} by {this.props.author}
-                <ul>{_.map(this.props.resources, (v) => (<li>{v.uri}</li>))}</ul>
+                <ul>{this.props.resources.map((v) => (<li>{v.uri}</li>))}</ul>
             </li>
         );
     }
-});
+}
 
-var Shelf = React.createClass({
+@inject('bookStore') @observer
+class Shelf extends React.Component {
     componentDidMount() {
-        this.props.dispatch(BookActions.getBooks());
-    },
+    }
+
     handleDeleteBook() {
 
-    },
-    render: function () {
-        if (!this.props.list) {
+    }
+
+    render() {
+        if (this.props.bookStore.books.size === 0) {
             return <ul></ul>;
         }
 
         return (
             <ul>
-                {_.map(this.props.list, (item) => {
+                {Array.from(this.props.bookStore.books.values()).map((item) => {
                     return (<BookItem key={item.id} id={item.id} name={item.name} author={item.author} resources={item.resources}
                                       handleDeleteThread={this.handleDeleteBook.bind(this, item.id)} />);
                 })}
             </ul>
         );
     }
-});
-
-function mapStateToProps(state) {
-    var books = utils.filterState(state, 'book.shelf.books', []);
-
-    return {list: books};
 }
 
-export default connect(mapStateToProps)(Shelf);
+export default Shelf;

@@ -8,31 +8,27 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {createStore, applyMiddleware} from 'redux';
-import {Provider} from 'react-redux';
-import promiseMiddleware from 'redux-promise';
-import discussReducers from './reducers/DiscussReducers';
-import BookReducers from './reducers/BookReducers';
-import UIReducers from './reducers/UIReducers';
 import {Router, browserHistory} from 'react-router';
-import {handleActions} from 'redux-actions';
 import Route from './Route.js';
+import {Provider} from 'mobx-react';
+import BookStore from './stores/BookStore';
 
 import 'normalize.css/normalize.css';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-var configureStore = (initialState) => {
-    return createStore(
-        handleActions({...discussReducers, ...BookReducers, ...UIReducers}),
-        initialState,
-        applyMiddleware(promiseMiddleware));
-};
+injectTapEventPlugin();
 
-const store = configureStore();
+const bookStore = new BookStore();
+bookStore.loadBooks();
 
 ReactDOM.render((
-    <Provider store={store}>
+    <MuiThemeProvider muiTheme={getMuiTheme()}>
+        <Provider bookStore={bookStore}>
             <Router
                 children={Route}
                 history={browserHistory} />
-    </Provider>
+        </Provider>
+    </MuiThemeProvider>
 ), document.getElementById('app-container'));
