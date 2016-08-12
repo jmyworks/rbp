@@ -8,7 +8,6 @@
 
 import restify from 'restify';
 import RESTHelper from '../common/RESTHelper';
-import DiscussAPI from '../common/api/DiscussAPI';
 import BookAPI from '../common/api/BookAPI';
 import APIImplementsV1 from './implements/APIImplementsV1';
 

@@ -10,7 +10,6 @@ import {typeCheck} from 'type-check';
 import _ from 'lodash';
 import paramTypes from './paramTypes';
 import request from 'superagent';
-import Promise from 'bluebird';
 
 var RESTHelper = {
     clientRequest: function (config, APIDeclare, params, callback) {
@@ -22,24 +21,20 @@ var RESTHelper = {
         // check params
         let errorParam = APIDeclare.checkParams(params);
         if (errorParam !== true) {
-            callback(new Error('Invalid parameter:' + errorParam));
-
-            return;
+            return Promise.rejected(new Error('Invalid parameter:' + errorParam));
         }
 
         var method = (APIDeclare.method === 'del' ? 'DELETE' : APIDeclare.method).toLowerCase();
         var uri = config.baseUrl + APIDeclare.uri;
-        request[method](uri)
+        var query = method === 'get' ? params : {};
+
+        return request[method](uri)
             .type('application/json')
+            .query(query)
             .send(params)
             .accept('json')
-            .end((err, res) => {
-                if (err) {
-                    callback(new Error(method + ' ' + uri + ' failed: ' + err.message));
-                } else {
-                    callback(null, res.body);
-                }
-            });
+            .then((res) => res.body)
+            .catch((err) => method + ' ' + uri + ' failed: ' + err.message);
     },
     serverResponse: function (req, res, APIImplements, APIDeclare) {
         if (!APIImplements.hasOwnProperty(APIDeclare.version)) {
@@ -121,7 +116,7 @@ var RESTHelper = {
                 checkParams: function (params) {
                     // check id
                     if (_.endsWith(meta.uri, ':id')) {
-                        if (!params.id || !typeCheck('Integer', params.id.toString(), paramTypes)) {
+                        if (!params.id || !typeCheck('ID', params.id, paramTypes)) {
                             return 'id';
                         }
                     }
@@ -209,31 +204,5 @@ var RESTHelper = {
 module.exports = {
     parseAPIs: RESTHelper.parseAPIs,
     serverResponse: RESTHelper.serverResponse,
-    clientRequest: RESTHelper.clientRequest,
-    getPromise: (config, API) => {
-        return (params) => {
-            // get _callback
-            var callback;
-            if (params && params.hasOwnProperty('requestCallback') && typeof params.requestCallback === 'function') {
-                callback = params.requestCallback;
-            }
-
-            var promisdRequest = Promise.promisify(RESTHelper.clientRequest);
-            return promisdRequest(config, API, params).then((data) => {
-                if (callback) {
-                    callback(true, data);
-                }
-
-                return data;
-            }, (error) => {
-                var message = error.message;
-
-                if (callback) {
-                    callback(false, message);
-                }
-
-                return message;
-            });
-        };
-    }
+    clientRequest: RESTHelper.clientRequest
 };

@@ -25,10 +25,19 @@ var Book = new Schema({
         type: Date,
         default: Date.now
     },
-    resources: [{}]
+    resources: [{
+        name: {
+            type: String,
+            required: true
+        },
+        uri: {
+            type: String,
+            required: true
+        }
+    }]
 });
 
 Book.plugin(autoIncrement.plugin, {model: 'Book', field: 'id', startAt: 1, incrementBy: 1});
 var BookModel = mongodb.model('Book', Book);
 
-module.exports = BookModel;
+export default BookModel;

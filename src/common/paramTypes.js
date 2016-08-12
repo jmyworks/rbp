@@ -6,14 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-import _ from 'lodash';
-
 var paramTypes = {
     customTypes: {
-        Integer: {
-            typeOf: 'String',
+        ID: {
+            typeOf: 'Number',
             validate: function(value) {
-                return _.parseInt(value).toString() === value;
+                return Math.ceil(value) == Math.floor(value);
             }
         },
         API: {

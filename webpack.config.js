@@ -66,6 +66,9 @@ module.exports = {
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.DedupePlugin(),
+        new webpack.ProvidePlugin({
+            'Promise': 'bluebird'
+        }),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false

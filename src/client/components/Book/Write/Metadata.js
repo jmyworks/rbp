@@ -9,7 +9,7 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 class Metadata extends React.Component {
     constructor() {
         super();
-        
+
         this.state = {type: 1};
     }
 
@@ -23,7 +23,6 @@ class Metadata extends React.Component {
                 <TextField name="name" hintText="ex. Daily Note" floatingLabelText="Book Name" /><br />
                 <TextField name="author" hintText="ex. Great Author" floatingLabelText="Author" /><br />
                 <RadioButtonGroup name="type" defaultSelected="radio" style={{maxWidth: '100px', textAlign: 'left', margin: '10px 0'}}>
-                    <RadioButton style={{display: 'inline-block'}} value="pdf" label="PDF" />
                     <RadioButton style={{display: 'inline-block'}} value="radio" label="RADIO" />
                 </RadioButtonGroup>
                 {this.props.children}

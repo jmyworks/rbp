@@ -6,10 +6,18 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-import ThreadModel from '../models/ThreadModel';
 import BookModel from '../models/BookModel';
 
 module.exports = {
+    getBook: function (params, cb) {
+        BookModel.findOne({id: params.id}, (error, doc) => {
+            if (error) {
+                cb(new Error('Database Error:' + error));
+            } else {
+                cb(doc);
+            }
+        });
+    },
     getBooks: function(params, cb) {
         BookModel.find({}, (error, docs) => {
             if (error) {
@@ -17,7 +25,7 @@ module.exports = {
             } else {
                 cb(docs);
             }
-        });
+        }).limit(50);
     },
     addBook: function (params, cb) {
         var book = new BookModel(params);
@@ -26,31 +34,12 @@ module.exports = {
             if (error) {
                 cb(new Error('Database Error:' + error));
             } else {
-                var id = doc.id;
-                cb({...params, id});
+                cb(doc);
             }
         });
     },
     updateBook: function(params, cb) {
-        BookModel.findOneAndUpdate({id: params.id}, params, (error) => {
-            if (error) {
-                cb(new Error('Database Error:' + error));
-            } else {
-                cb(params.id.toString());
-            }
-        });
-    },
-    getThreads: function(params, cb) {
-        ThreadModel.find({}, (error, docs) => {
-            if (error) {
-                cb(new Error('Database Error:' + error));
-            } else {
-                cb(docs);
-            }
-        });
-    },
-    getThread: function(params, cb) {
-        ThreadModel.findOne({id: params.id}, (error, doc) => {
+        BookModel.findOneAndUpdate({id: params.id}, params, {new: true}, (error, doc) => {
             if (error) {
                 cb(new Error('Database Error:' + error));
             } else {
@@ -58,32 +47,12 @@ module.exports = {
             }
         });
     },
-    addThread: function(params, cb) {
-        var thread = new ThreadModel(params);
-
-        thread.save(function(error, doc) {
-            if (error) {
-                cb(new Error('Database Error:' + error));
-            } else {
-                cb(doc.id.toString());
-            }
-        });
-    },
-    deleteThread: function(params, cb) {
-        ThreadModel.findOneAndRemove({id: params.id}, (error) => {
+    deleteBook: function(params, cb) {
+        BookModel.findOneAndRemove({id: params.id}, (error) => {
             if (error) {
                 cb(new Error('Database Error:' + error));
             } else {
                 cb(params.id);
-            }
-        });
-    },
-    updateThread: function(params, cb) {
-        ThreadModel.findOneAndUpdate({id: params.id}, params, (error) => {
-            if (error) {
-                cb(new Error('Database Error:' + error));
-            } else {
-                cb(params.id.toString());
             }
         });
     }

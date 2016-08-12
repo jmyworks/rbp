@@ -24,10 +24,10 @@ var BookAPI = [
             params: {
                 resources: 'Array'
             },
-            return: 'Integer'
+            return: 'Object'
         },
         delete: {   // deleteBook
-            return: 'Integer'
+            return: 'ID'
         }
     }
 ];

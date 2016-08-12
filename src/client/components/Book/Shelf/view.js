@@ -9,8 +9,9 @@ class BookItem extends React.Component {
     render() {
         return (
             <li>
+                {this.props.type}<br />
                 {this.props.name} by {this.props.author}
-                <ul>{this.props.resources.map((v) => (<li>{v.uri}</li>))}</ul>
+                <ul>{this.props.resources.map((v) => (<li key={v._id}>{v.name} {v.uri}</li>))}</ul>
             </li>
         );
     }
@@ -33,7 +34,8 @@ class Shelf extends React.Component {
         return (
             <ul>
                 {Array.from(this.props.bookStore.books.values()).map((item) => {
-                    return (<BookItem key={item.id} id={item.id} name={item.name} author={item.author} resources={item.resources}
+                    return (<BookItem key={item.id} id={item.id} name={item.name} author={item.author}
+                                      resources={item.resources} type={item.type}
                                       handleDeleteThread={this.handleDeleteBook.bind(this, item.id)} />);
                 })}
             </ul>

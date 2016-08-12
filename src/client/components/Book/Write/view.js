@@ -38,28 +38,26 @@ class Write extends React.Component {
 
     handleFileUploaded(file, response) {
         if (response && response.path) {
-            this.resources.push({uri: '/public/upload/' + response.path});
+            this.resources.push({
+                name: file.name,
+                uri: '/public/upload/' + response.path
+            });
         }
     }
 
     @action handleBindResources (event) {
         event.preventDefault();
 
-        console.log(this.resources);
-
         this.loading = true;
-        this.props.bookStore.updateBook({id: this.metadata.id, resources: this.resources,
-            requestCallback: (successed, payload) => {
-                if (successed) {
-                    this.error = '';
-                    this.step = 2;
-                } else {
-                    this.error = payload;
-                }
-
-                this.loading = false;
-            }
-        });
+        this.props.bookStore.updateBook({id: this.metadata.id, resources: this.resources})
+            .then((data) => {
+                this.error = '';
+                this.step = 2;
+            })
+            .catch((error) => {
+                this.error = error.toString();
+            })
+            .lastly(() => this.loading = false);
     }
 
     @action handleCreateBook (event) {
@@ -69,18 +67,16 @@ class Write extends React.Component {
         var params = serialize(form, {hash: true});
 
         this.loading = true;
-        this.props.bookStore.createBook({...params,
-            requestCallback: (successed, payload) => {
-                if (successed) {
-                    this.metadata = payload;
-                    this.error = '';
-                    this.step = 1;
-                } else {
-                    this.error = payload;
-                }
-
-                this.loading = false;
-            }});
+        this.props.bookStore.createBook(params)
+            .then((data) => {
+                this.metadata = data;
+                this.error = '';
+                this.step = 1;
+            })
+            .catch((error) => {
+                this.error = error.toString();
+            })
+            .lastly(() => this.loading = false);
     }
 
     getStepContent () {
