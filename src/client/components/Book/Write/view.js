@@ -90,7 +90,7 @@ class Write extends React.Component {
                     <Metadata>
                         <div style={{width: '256px', margin: '0 auto', textAlign: 'left'}}>
                             {this.loading ?
-                                <CircularProgress size="0.5" /> :
+                                <CircularProgress size={0.5} /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleCreateBook} />}
                             <ErrorTip error={this.error} hasAction={true} duration={3500} />
                         </div>
@@ -140,5 +140,9 @@ class Write extends React.Component {
         );
     }
 }
+
+Write.wrappedComponent.contextTypes = {
+    router: React.PropTypes.object
+};
 
 export default Write;
