@@ -22,7 +22,7 @@ server.use(restify.bodyParser());
 
 // api handlers
 // get API declares
-var APIDeclares = RESTHelper.parseAPIs([...DiscussAPI, ...BookAPI]);
+var APIDeclares = RESTHelper.parseAPIs(BookAPI);
 // implements by version
 var APIImplements = {
     v1: APIImplementsV1

@@ -10,13 +10,13 @@ import {typeCheck} from 'type-check';
 import _ from 'lodash';
 import paramTypes from './paramTypes';
 import request from 'superagent';
-import utils from './utils';
+import Promise from 'bluebird';
 
 var RESTHelper = {
-    clientRequest: function(config, APIDeclare, params, callback) {
+    clientRequest: function (config, APIDeclare, params, callback) {
         // check id
         if (_.endsWith(APIDeclare.uri, ':id')) {
-            APIDeclare.uri = _.trimRight(APIDeclare.uri, ':id');
+            APIDeclare.uri = _.trimEnd(APIDeclare.uri, ':id');
         }
 
         // check params
@@ -41,7 +41,7 @@ var RESTHelper = {
                 }
             });
     },
-    serverResponse: function(req, res, APIImplements, APIDeclare) {
+    serverResponse: function (req, res, APIImplements, APIDeclare) {
         if (!APIImplements.hasOwnProperty(APIDeclare.version)) {
             res.send(new Error('version not matched!'));
 
@@ -80,7 +80,7 @@ var RESTHelper = {
         var APIArray = [];
 
         if (APISet instanceof Array) {
-            APISet.forEach(function(API) {
+            APISet.forEach(function (API) {
                 if (RESTHelper.isAPI(API)) {
                     APIArray.push(API);
                 }
@@ -97,18 +97,15 @@ var RESTHelper = {
 
         var parsedAPIs = {};
 
-        APIArray.forEach(function(API) {
+        APIArray.forEach(function (API) {
             _.merge(parsedAPIs, RESTHelper.parseAPI(API));
         });
 
         return parsedAPIs;
     },
-
     isAPI: function (API) {
         return typeCheck('API', API, paramTypes);
-    }
-    ,
-
+    },
     parseAPI: function (API) {
         var uri = API.uri;
         var methods = ['list', 'create', 'show', 'update', 'delete'];
@@ -155,7 +152,7 @@ var RESTHelper = {
 
         var parsedAPIs = {};
 
-        methods.forEach(function(method) {
+        methods.forEach(function (method) {
             if (API.hasOwnProperty(method)) {
                 var meta = RESTHelper.getAPIMeta(API.version, uri, method);
 
@@ -167,7 +164,6 @@ var RESTHelper = {
 
         return parsedAPIs;
     },
-
     getAPIMeta: function (version, baseURI, method) {
         var meta = {
             uri: null,
@@ -210,40 +206,34 @@ var RESTHelper = {
     }
 };
 
-
 module.exports = {
     parseAPIs: RESTHelper.parseAPIs,
     serverResponse: RESTHelper.serverResponse,
     clientRequest: RESTHelper.clientRequest,
     getPromise: (config, API) => {
-        function ErrorWithHash(message, hash) {
-            this.message = message;
-            this.requestHash = hash;
-            this.requestSuccessed = false;
-        }
-
-        ErrorWithHash.prototype.toString = function () {
-            return this.message;
-        };
-
         return (params) => {
             // get _callback
-            var hash;
+            var callback;
             if (params && params.hasOwnProperty('requestCallback') && typeof params.requestCallback === 'function') {
-                hash = utils.getRequestHash(params.requestCallback);
+                callback = params.requestCallback;
             }
 
-            var promise = new Promise((resolve, reject) => {
-                RESTHelper.clientRequest(config, API, params, (error, data) => {
-                    if (error instanceof Error) {
-                        reject(new ErrorWithHash(error.message, hash));
-                    } else {
-                        resolve({data, requestHash: hash, requestSuccessed: true});
-                    }
-                });
-            });
+            var promisdRequest = Promise.promisify(RESTHelper.clientRequest);
+            return promisdRequest(config, API, params).then((data) => {
+                if (callback) {
+                    callback(true, data);
+                }
 
-            return promise;
+                return data;
+            }, (error) => {
+                var message = error.message;
+
+                if (callback) {
+                    callback(false, message);
+                }
+
+                return message;
+            });
         };
     }
 };

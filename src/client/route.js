@@ -9,7 +9,7 @@ var Route = routerHelper({
     match: '',
     path: '',
     children: [
-        'Index', 'Book', 'Discuss', 'About'
+        'Index', 'Book', 'About'
     ]
 });
 

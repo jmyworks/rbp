@@ -1,16 +1,9 @@
 import React from 'react';
 import Header from './Header.js';
 import Footer from './Footer.js';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-injectTapEventPlugin();
-
-var App = React.createClass({
-    getChildContext() {
-        return {muiTheme: getMuiTheme()};
-    },
-    render: function() {
+class App extends React.Component {
+    render() {
         return (
             <div id="app">
                 <Header />
@@ -21,10 +14,6 @@ var App = React.createClass({
             </div>
         );
     }
-});
-
-App.childContextTypes = {
-    muiTheme: React.PropTypes.object.isRequired
-};
+}
 
 export default App;

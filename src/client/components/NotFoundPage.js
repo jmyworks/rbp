@@ -8,13 +8,13 @@
 
 import React from 'react';
 
-var NotFoundPage = React.createClass({
+class NotFoundPage extends React.Component {
     render() {
         return (
             <div>Page Not Found!</div>
         );
     }
-});
+}
 
 module.exports = {
     component: NotFoundPage,

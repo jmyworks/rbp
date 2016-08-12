@@ -15,9 +15,9 @@ var Book = React.createClass({
                 <Toolbar>
                     <ToolbarGroup>
                         <RaisedButton label="Write a Book" primary={true}
-                                      containerElement={<Link to="/Book/Write" />} linkButton={true} />
+                                      containerElement={<Link to="/Book/Write" />} />
                         <FlatButton label="My Shelf" primary={true}
-                                    containerElement={<Link to="/Book/Shelf" />} linkButton={true} />
+                                    containerElement={<Link to="/Book/Shelf" />} />
                     </ToolbarGroup>
                     <ToolbarGroup>
                         <ToolbarSeparator />

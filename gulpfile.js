@@ -26,6 +26,11 @@ var fileServer = null;
 var webpack_debug = require('./webpack.dev.config.js');
 var webpack_release = require('./webpack.config.js');
 
+var babelrc = {
+    "presets": ["es2015", "stage-2"],
+    "plugins": []
+};
+
 var unhandled_resources = [
     'src/client/app_loader.html',
     'src/public/**/*.*'
@@ -63,14 +68,14 @@ gulp.task('unhandled_resources', function() {
 // common scripts
 gulp.task('common_scripts', function() {
     return gulp.src(common_scripts, {base: 'src'})
-        .pipe($.babel())
+        .pipe($.babel(babelrc))
         .pipe(gulp.dest('build'));
 });
 
 // server scripts
 gulp.task('server_scripts', function() {
     return gulp.src(server_scripts, {base: 'src'})
-        .pipe($.babel())
+        .pipe($.babel(babelrc))
         .pipe(gulp.dest('build'));
 });
 
