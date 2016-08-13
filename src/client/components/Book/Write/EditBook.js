@@ -7,13 +7,13 @@ import {inject, observer} from 'mobx-react';
 import {observable} from 'mobx';
 
 @inject('bookStore') @observer
-class Edit extends React.Component {
+class EditBook extends React.Component {
     @observable book = {};
 
     constructor(props) {
         super(props);
 
-        this.props.bookStore.getBook(this.props.params.id).then((data) => this.book = data);
+        this.props.bookStore.getBook(props.id).then((data) => this.book = data);
     }
 
     render() {
@@ -23,4 +23,4 @@ class Edit extends React.Component {
     }
 }
 
-export default Edit;
+export default EditBook;

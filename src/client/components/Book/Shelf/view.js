@@ -4,15 +4,16 @@
 
 import React from 'react';
 import {inject, observer} from 'mobx-react';
+import {GridList, GridTile} from 'material-ui/GridList';
+import {Link} from 'react-router';
 
 class BookItem extends React.Component {
     render() {
         return (
-            <li>
-                {this.props.type}<br />
-                {this.props.name} by {this.props.author}
+            <GridTile title={<Link to={'/Book/Edit/' + this.props.id}>{this.props.name}</Link>}
+                      subtitle={'by ' + this.props.author}>
                 <ul>{this.props.resources.map((v) => (<li key={v._id}>{v.name} {v.uri}</li>))}</ul>
-            </li>
+            </GridTile>
         );
     }
 }
@@ -32,13 +33,13 @@ class Shelf extends React.Component {
         }
 
         return (
-            <ul>
+            <GridList>
                 {Array.from(this.props.bookStore.books.values()).map((item) => {
                     return (<BookItem key={item.id} id={item.id} name={item.name} author={item.author}
                                       resources={item.resources} type={item.type}
                                       handleDeleteThread={this.handleDeleteBook.bind(this, item.id)} />);
                 })}
-            </ul>
+            </GridList>
         );
     }
 }

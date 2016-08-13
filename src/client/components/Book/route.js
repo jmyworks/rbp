@@ -8,5 +8,5 @@ module.exports = routerHelper({
     match: 'Book',
     path: 'Book',
     index: 'Shelf',
-    children: ['Write', 'Shelf', 'Edit']
+    children: ['Write', 'Shelf']
 });
