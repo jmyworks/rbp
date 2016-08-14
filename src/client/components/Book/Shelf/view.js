@@ -10,7 +10,7 @@ import {Link} from 'react-router';
 class BookItem extends React.Component {
     render() {
         return (
-            <GridTile title={<Link to={'/Book/Edit/' + this.props.id}>{this.props.name}</Link>}
+            <GridTile title={<Link to={'/Book/Write/' + this.props.id}>{this.props.name}</Link>}
                       subtitle={'by ' + this.props.author}>
                 <ul>{this.props.resources.map((v) => (<li key={v._id}>{v.name} {v.uri}</li>))}</ul>
             </GridTile>

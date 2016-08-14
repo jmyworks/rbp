@@ -11,6 +11,7 @@ class BookAttribute {
     @observable author;
     type;
     @observable resources;
+    @observable ext;
 
     constructor(params) {
         this.id = params.id;
@@ -18,6 +19,7 @@ class BookAttribute {
         this.author = params.author;
         this.type = params.type;
         this.resources = params.resources ? params.resources : [];
+        this.ext = params.ext ? params.ext : {};
     }
 }
 

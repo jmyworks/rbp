@@ -48,6 +48,10 @@ var server_scripts = [
     'src/server/**/*.js'
 ];
 
+var cmap_resources = [
+    'node_modules/pdfjs-dist/cmaps/*.bcmap'
+];
+
 // default
 gulp.task('default', ['build:dev']);
 
@@ -63,6 +67,12 @@ gulp.task('clean', function() {
 gulp.task('unhandled_resources', function() {
     return gulp.src(unhandled_resources, {base: 'src'})
         .pipe(gulp.dest('build'));
+});
+
+// cmaps
+gulp.task('cmap_resources', function() {
+    return gulp.src(cmap_resources)
+        .pipe(gulp.dest('build/public/cmaps'));
 });
 
 // common scripts
@@ -111,11 +121,11 @@ gulp.task('bundle:release', function(cb) {
 // build
 // common_scripts and server_scripts MUST NOT run async
 gulp.task('build:dev', ['clean'], function(cb) {
-    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'bundle:dev', 'serve', cb);
+    runSequence(['unhandled_resources', 'cmap_resources'], 'common_scripts', 'server_scripts', 'bundle:dev', 'serve', cb);
 });
 
 gulp.task('build:release', ['clean'], function(cb) {
-    runSequence(['unhandled_resources'], 'common_scripts', 'server_scripts', 'bundle:release', cb);
+    runSequence(['unhandled_resources', 'cmap_resources'], 'common_scripts', 'server_scripts', 'bundle:release', cb);
 });
 
 // watch

@@ -34,7 +34,11 @@ var Book = new Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    ext: {
+        type: Object,
+        default: {}
+    }
 });
 
 Book.plugin(autoIncrement.plugin, {model: 'Book', field: 'id', startAt: 1, incrementBy: 1});

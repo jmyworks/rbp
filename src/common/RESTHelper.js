@@ -125,9 +125,21 @@ var RESTHelper = {
                         return true;
                     }
 
-                    for (var param in declare.params) {
-                        if (!typeCheck(declare.params[param], params[param], paramTypes)) {
-                            return param;
+                    var verifyParams = {...params};
+                    delete verifyParams.id;
+
+                    if (meta.method === 'put') { // when update, user params first
+                        for (var param in verifyParams) {
+                            if (!declare.params.hasOwnProperty(param)
+                                || !typeCheck(declare.params[param], verifyParams[param], paramTypes)) {
+                                return param;
+                            }
+                        }
+                    } else if (meta.method === 'post') { //when create, declare params first
+                        for (var param in declare.params) {
+                            if (!typeCheck(declare.params[param], verifyParams[param], paramTypes)) {
+                                return param;
+                            }
                         }
                     }
 

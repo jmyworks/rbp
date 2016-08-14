@@ -7,15 +7,6 @@ import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 class Metadata extends React.Component {
-    constructor() {
-        super();
-
-        this.state = {type: 1};
-    }
-
-    handleChange(event, index, type) {
-        this.setState({type});
-    }
 
     render() {
         return (

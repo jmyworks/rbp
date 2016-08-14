@@ -31,6 +31,7 @@
     "mongoose": "4.0.6",
     "mongoose-auto-increment": "4.0.0",
     "normalize.css": "3.0.3",
+    "pdfjs-dist": "^1.5.376",
     "prelude-ls": "1.1.2",
     "randomstring": "1.x",
     "react": "15.3.0",

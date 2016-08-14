@@ -22,7 +22,10 @@ var BookAPI = [
         },
         update: {  // updateBook
             params: {
-                resources: 'Array'
+                name: 'String',
+                author: 'String',
+                resources: 'Array',
+                ext: 'Object'
             },
             return: 'Object'
         },
