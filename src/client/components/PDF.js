@@ -36,6 +36,14 @@ class PDF extends React.Component {
         this.open();
     }
 
+    feedback() {
+        if (this.props.onFeedback && this.pdfViewer) {
+            this.props.onFeedback(this.pdfViewer.currentPageNumber,
+                this.pdfViewer.scroll.lastY,
+                this.pdfViewer.currentScale);
+        }
+    }
+
     @action initUI() {
         const PDFJS = window.PDFJS;
         var linkService = new PDFJS.PDFLinkService();
@@ -61,6 +69,7 @@ class PDF extends React.Component {
 
         container.addEventListener('pagechange', (evt) => {
             this.currentPage = evt.pageNumber;
+            this.feedback();
         }, true);
 
         window.onresize = function () {
@@ -125,7 +134,7 @@ class PDF extends React.Component {
                         </IconButton>
                     </ToolbarGroup>
                 </Toolbar>
-                <div id="viewerContainer" style={{position: 'relative', height: '600px', overflow: 'auto'}}>
+                <div id="viewerContainer" style={{position: 'relative', height: this.props.height, overflow: 'auto'}}>
                     <div className="pdfViewer"></div>
                 </div>
             </div>
