@@ -4,7 +4,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {action, observable} from 'mobx';
+import {action, extendObservable} from 'mobx';
 import {observer} from 'mobx-react';
 import LinearProgress from 'material-ui/LinearProgress';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
@@ -22,13 +22,16 @@ window.PDFJS.cMapPacked = true;
 
 @observer
 class PDF extends React.Component {
-    @observable loading = true;
-    @observable progress = 0;
-    @observable error = '';
-    @observable currentPage = 1;
-
     constructor(props) {
         super(props);
+
+        extendObservable(this, {
+            loading: true,
+            progress: 0,
+            error: '',
+            currentPage: 1,
+            pageCount: 0
+        })
     }
 
     componentDidMount() {
@@ -62,9 +65,11 @@ class PDF extends React.Component {
         });
         linkService.setHistory(this.pdfHistory);
 
-        container.addEventListener('pagesinit', function () {
+        container.addEventListener('pagesinit', () => {
             // We can use pdfViewer now, e.g. let's change default scale.
             pdfViewer.currentScaleValue = 'auto';
+            this.pageCount = pdfViewer.pagesCount;
+            this.feedback();
         });
 
         container.addEventListener('pagechange', (evt) => {
@@ -96,14 +101,11 @@ class PDF extends React.Component {
         });
     }
 
-    pagesCount() {
-        return this.pdfDocument ? this.pdfDocument.numPages : 0;
-    }
-
     setPage(val) {
         if (this.pdfViewer) {
             this.pdfViewer.currentPageNumber = val;
             this.currentPage = val;
+            this.test = val;
         }
     }
 
@@ -127,9 +129,9 @@ class PDF extends React.Component {
                             <NavigationChevronLeft />
                         </IconButton>
                         <div>
-                            {this.currentPage} / {this.pagesCount()}
+                            {this.currentPage} / {this.pageCount}
                         </div>
-                        <IconButton onClick={() => this.setPage(this.currentPage+1)} disabled={this.currentPage === this.pagesCount()}>
+                        <IconButton onClick={() => this.setPage(this.currentPage+1)} disabled={this.currentPage === this.pageCount}>
                             <NavigationChevronRight />
                         </IconButton>
                     </ToolbarGroup>

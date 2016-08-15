@@ -5,14 +5,16 @@
 import React from 'react';
 import Snackbar from 'material-ui/Snackbar';
 import {observer} from 'mobx-react';
-import {observable} from 'mobx';
+import {extendObservable} from 'mobx';
 
 @observer
 class ErrorTip extends React.Component {
-    @observable showError = false;
-
     constructor(props) {
         super(props);
+
+        extendObservable(this, {
+            showError: false
+        });
 
         this.handleRequestClose = this.handleRequestClose.bind(this);
         this.handleAction = this.handleAction.bind(this);

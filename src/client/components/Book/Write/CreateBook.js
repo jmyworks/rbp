@@ -13,18 +13,21 @@ import Pager from 'material-ui/Paper';
 import serialize from 'form-serialize';
 import ErrorTip from '../../ErrorTip';
 import {inject, observer} from 'mobx-react';
-import {observable, action} from 'mobx';
+import {extendObservable, action} from 'mobx';
 
 @inject('bookStore') @observer
 class CreateBook extends React.Component {
     metadata = {};
-    @observable step = 0;
-    @observable loading = false;
-    @observable error = '';
     resources = [];
 
     constructor(props) {
         super(props);
+
+        extendObservable(this, {
+            step: 0,
+            loading: false,
+            error: ''
+        });
 
         this.handleFileListChange = this.handleFileListChange.bind(this);
         this.handleFileUploaded = this.handleFileUploaded.bind(this);

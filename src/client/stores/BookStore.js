@@ -7,11 +7,11 @@ import APICall from '../utils/APICall';
 
 class BookAttribute {
     id;
-    @observable name;
-    @observable author;
+    name;
+    author;
     type;
-    @observable resources;
-    @observable ext;
+    resources;
+    ext;
 
     constructor(params) {
         this.id = params.id;

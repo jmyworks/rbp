@@ -5,7 +5,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {inject, observer} from 'mobx-react';
-import {observable} from 'mobx';
+import {extendObservable} from 'mobx';
 import {Step, Stepper, StepLabel} from 'material-ui/Stepper';
 import AdvancedMetadata from './AdvancedMetadata';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -20,11 +20,14 @@ import _ from 'lodash';
 
 @observer
 class MouseTracker extends React.Component {
-    @observable y = 0;
     handling = false;
 
     constructor(props) {
         super(props);
+
+        extendObservable(this, {
+            y: 0
+        })
     }
 
     componentDidMount() {
@@ -80,8 +83,16 @@ class AudioInput extends React.Component {
     pdfOffset = 0;
     pdfCurrentPage = 1;
     pdfScale = 1.0;
-    @observable audioDialogOpen = false;
     lastAudio;
+    lastY = 0;
+
+    constructor(props) {
+        super(props);
+
+        extendObservable(this, {
+            audioDialogOpen: false
+        })
+    }
 
     handlePDFFeedback(page, y, scale) {
         this.pdfCurrentPage = page;
@@ -91,6 +102,8 @@ class AudioInput extends React.Component {
 
     handleAddAudio(target, y) {
         if (target.offsetParent.className === 'page') {
+            this.lastY = y;
+
             return new Promise((resolve, reject) => {
                 this.audioDialogOpen = true;
                 this.audioDialogResolver = resolve;
@@ -126,7 +139,7 @@ class AudioInput extends React.Component {
         if (!submit) {
             this.lastAudio = null;
         } else if (this.lastAudio && this.props.onAction) {
-            this.props.onAction(this.lastAudio, this.pdfCurrentPage, this.pdfOffset / this.pdfScale);
+            this.props.onAction(this.lastAudio, this.pdfCurrentPage, (this.pdfOffset + this.lastY) / this.pdfScale);
         }
     }
 
@@ -164,14 +177,17 @@ class AudioInput extends React.Component {
 
 @inject('bookStore') @observer
 class EditBook extends React.Component {
-    @observable book = {};
     inputAudios = {};
-    @observable step = 0;
-    @observable loading = false;
-    @observable error = '';
 
     constructor(props) {
         super(props);
+
+        extendObservable(this, {
+            book: {},
+            step: 0,
+            loading: false,
+            error: ''
+        });
 
         props.bookStore.getBook(props.id).then((data) => {
             this.book = data;
@@ -184,6 +200,7 @@ class EditBook extends React.Component {
 
         var form = document.querySelector('#bookMetadata');
         var params = serialize(form, {hash: true});
+        params.ext.audios = this.book.ext.audios;
 
         this.loading = true;
         this.props.bookStore.updateBook({...params, id: this.book.id})
@@ -199,7 +216,7 @@ class EditBook extends React.Component {
     }
 
     handleSelectAudio(audio, page, offset) {
-        this.inputAudios[Math.floor(offset)] = {page, offset, audio};
+        this.inputAudios[offset*10] = {page, offset, audio};
     }
 
     handleBindAudios(event) {
