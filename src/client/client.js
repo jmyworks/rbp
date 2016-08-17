@@ -12,6 +12,7 @@ import {Router, browserHistory} from 'react-router';
 import Route from './Route.js';
 import {Provider} from 'mobx-react';
 import BookStore from './stores/BookStore';
+import UI from './stores/UIStore';
 
 import 'normalize.css/normalize.css';
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -25,7 +26,7 @@ bookStore.loadBooks();
 
 ReactDOM.render((
     <MuiThemeProvider muiTheme={getMuiTheme()}>
-        <Provider bookStore={bookStore}>
+        <Provider bookStore={bookStore} UI={UI}>
             <Router
                 children={Route}
                 history={browserHistory} />

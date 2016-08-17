@@ -78,11 +78,17 @@ class MouseTracker extends React.Component {
     }
 }
 
-@observer
+class AudioLiner extends React.Component {
+    render() {
+        return (<div style={{borderTop: '5px solid red',
+                    position: 'absolute', width: '100%', height: '5px', top: this.props.offset}}></div>);
+    }
+}
+
+@inject('UI') @observer
 class AudioInput extends React.Component {
     pdfOffset = 0;
     pdfCurrentPage = 1;
-    pdfScale = 1.0;
     lastAudio;
     lastY = 0;
 
@@ -90,13 +96,14 @@ class AudioInput extends React.Component {
         super(props);
 
         extendObservable(this, {
-            audioDialogOpen: false
+            audioDialogOpen: false,
+            pdfScale: 1.0
         })
     }
 
     handlePDFFeedback(page, y, scale) {
         this.pdfCurrentPage = page;
-        this.pdfOffset = y;
+        this.pdfOffset = y - 10; // offset adjust: mousetracker is 10px upon the real value
         this.pdfScale = scale;
     }
 
@@ -161,7 +168,9 @@ class AudioInput extends React.Component {
         return (
             <div>
                 <MouseTracker onAction={this.handleAddAudio.bind(this)}>
-                    <PDF file={this.props.pdf.uri} height="1000px" onFeedback={this.handlePDFFeedback.bind(this)} />
+                    <PDF file={this.props.pdf.uri} height="1000px" onFeedback={this.handlePDFFeedback.bind(this)}>
+                        {_.map(this.props.UI.audiosOffset, (offset) => (<AudioLiner key={offset} offset={offset/10*this.pdfScale} />))}
+                    </PDF>
                 </MouseTracker>
                 <Dialog title="Select an auido" actions={actions} modal={false} open={this.audioDialogOpen}
                         onRequestClose={this.handleCloseAudioDialog.bind(this)} autoScrollBodyContent={true}>
@@ -175,7 +184,7 @@ class AudioInput extends React.Component {
     }
 }
 
-@inject('bookStore') @observer
+@inject('bookStore', 'UI') @observer
 class EditBook extends React.Component {
     inputAudios = {};
 
@@ -192,6 +201,7 @@ class EditBook extends React.Component {
         props.bookStore.getBook(props.id).then((data) => {
             this.book = data;
             this.inputAudios = data.ext.audios ? data.ext.audios : {};
+            this.props.UI.audiosOffset = data.ext.audios ? _.keys(data.ext.audios) : [];
         });
     }
 
@@ -217,6 +227,7 @@ class EditBook extends React.Component {
 
     handleSelectAudio(audio, page, offset) {
         this.inputAudios[offset*10] = {page, offset, audio};
+        this.props.UI.audiosOffset.push(offset*10);
     }
 
     handleBindAudios(event) {
@@ -283,7 +294,7 @@ class EditBook extends React.Component {
 
                 return (
                     <AudioInput audios={audios} pdf={pdf} onAction={this.handleSelectAudio.bind(this)}>
-                        <div  style={{position: 'absolute', top: '0px', width: '100%'}}>
+                        <div style={{position: 'absolute', top: '0px', width: '100%'}}>
                             {this.loading ?
                                 <CircularProgress size={0.5} /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleBindAudios.bind(this)} />}

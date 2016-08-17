@@ -39,11 +39,9 @@ class PDF extends React.Component {
         this.open();
     }
 
-    feedback() {
+    feedback(top) {
         if (this.props.onFeedback && this.pdfViewer) {
-            this.props.onFeedback(this.pdfViewer.currentPageNumber,
-                this.pdfViewer.scroll.lastY,
-                this.pdfViewer.currentScale);
+            this.props.onFeedback(this.pdfViewer.currentPageNumber, top, this.pdfViewer.currentScale);
         }
     }
 
@@ -69,13 +67,15 @@ class PDF extends React.Component {
             // We can use pdfViewer now, e.g. let's change default scale.
             pdfViewer.currentScaleValue = 'auto';
             this.pageCount = pdfViewer.pagesCount;
-            this.feedback();
         });
 
         container.addEventListener('pagechange', (evt) => {
             this.currentPage = evt.pageNumber;
-            this.feedback();
         }, true);
+
+        container.addEventListener('updateviewarea', (evt) => {
+            this.feedback(pdfViewer.container.scrollTop);
+        });
 
         window.onresize = function () {
             // We can use pdfViewer now, e.g. let's change default scale.
@@ -138,6 +138,7 @@ class PDF extends React.Component {
                 </Toolbar>
                 <div id="viewerContainer" style={{position: 'relative', height: this.props.height, overflow: 'auto'}}>
                     <div className="pdfViewer"></div>
+                    {this.props.children}
                 </div>
             </div>
         );
