@@ -108,7 +108,7 @@ class CreateBook extends React.Component {
                     <Pager zDepth={0} style={{padding: '10px 20px', textAlign: 'center'}}>
                         <h2>Congratulations!</h2>
                         <p>
-                            <FlatButton onClick={() => {this.context.router.push('/Book/Write/' + this.metadata.id); }} secondary={true} label={'「' + this.metadata.name + '」'} /><br/><b>write by <i>{this.metadata.author}</i></b>
+                            <FlatButton onClick={() => {this.context.router.push('/Book/Write/' + this.metadata.id); }} secondary={true} label={'「' + this.metadata.name + '」'} /><br/><b>written by <i>{this.metadata.author}</i></b>
                         </p>
                     </Pager>
                 );

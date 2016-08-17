@@ -12,7 +12,10 @@ import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
 import {RadioButtonGroup, RadioButton} from 'material-ui/RadioButton';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, TableFooter} from 'material-ui/Table';
 import ErrorTip from '../../ErrorTip';
 import serialize from 'form-serialize';
 import PDF from '../../PDF';
@@ -184,6 +187,49 @@ class AudioInput extends React.Component {
     }
 }
 
+class WriteAnswers extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <form id="writeAnswers">
+                <Table selectable={false}>
+                    <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
+                        <TableRow>
+                            <TableHeaderColumn>ID</TableHeaderColumn>
+                            <TableHeaderColumn>Name</TableHeaderColumn>
+                            <TableHeaderColumn>Answers</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody stripedRows={true} displayRowCheckbox={false}>
+                        {this.props.audios.map((audio) => {
+                            return (
+                                <TableRow key={audio._id}>
+                                    <TableRowColumn>{audio._id}</TableRowColumn>
+                                    <TableRowColumn>{audio.name}</TableRowColumn>
+                                    <TableRowColumn>
+                                        <TextField name={'answers[' + audio._id + ']'} hintText="answer" defaultValue={this.props.answers[audio._id] ?
+                                        this.props.answers[audio._id] : ''} />
+                                    </TableRowColumn>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TableRowColumn colSpan="3" style={{textAlign: 'right'}}>
+                                {this.props.children}
+                            </TableRowColumn>
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+            </form>
+        );
+    }
+}
+
 @inject('bookStore', 'UI') @observer
 class EditBook extends React.Component {
     inputAudios = {};
@@ -246,6 +292,25 @@ class EditBook extends React.Component {
             .lastly(() => this.loading = false);
     }
 
+    handleBindAnswers(event) {
+        event.preventDefault();
+
+        var form = document.querySelector('#writeAnswers');
+        var params = serialize(form, {hash: true});
+
+        this.loading = true;
+        this.props.bookStore.updateBook({ext: {...this.book.ext, answers: params.answers}, id: this.book.id})
+            .then((data) => {
+                this.book = data;
+                this.error = '';
+                this.step = 3;
+            })
+            .catch((error) => {
+                this.error = error.toString();
+            })
+            .lastly(() => this.loading = false);
+    }
+
     render() {
         if (!this.book.id) {
             return <div></div>;
@@ -262,6 +327,9 @@ class EditBook extends React.Component {
                     </Step>
                     <Step>
                         <StepLabel>Write Answers</StepLabel>
+                    </Step>
+                    <Step>
+                        <StepLabel>Finished</StepLabel>
                     </Step>
                 </Stepper>
                 <div style={{margin: '0 auto', width: '90%', position: 'relative', textAlign: 'center'}}>
@@ -303,15 +371,38 @@ class EditBook extends React.Component {
                     </AudioInput>
                 );
             case 2:
+                var pattern = /\.(mp3|mp4)$/i;
+                var audios = _.sortBy(this.book.resources.filter((resource) => pattern.test(resource.name)),
+                    (o) => o.name.split('\.')[0]);
+                var answers = this.book.ext.answers ? this.book.ext.answers : {};
+
                 return (
-                    <div>
-                        write answers
-                    </div>
+                    <WriteAnswers audios={audios} answers={answers}>
+                        <div>
+                            {this.loading ?
+                                <CircularProgress size={0.5} /> :
+                                <RaisedButton label="Next" primary={true} onClick={this.handleBindAnswers.bind(this)} />}
+                            <ErrorTip error={this.error} hasAction={true} duration={3500} />
+                        </div>
+                    </WriteAnswers>
+                );
+            case 3:
+                return (
+                    <Paper zDepth={0} style={{padding: '10px 20px', textAlign: 'center'}}>
+                        <h2>Congratulations!</h2>
+                        <p>
+                            <FlatButton onClick={() => {this.context.router.push('/Book/Read/' + this.book.id); }} secondary={true} label={'Read 「' + this.book.name + '」'} /><br/><b>written by <i>{this.book.author}</i></b>
+                        </p>
+                    </Paper>
                 );
             default:
                 throw Error('unknown step during edit');
         }
     }
 }
+
+EditBook.wrappedComponent.contextTypes = {
+    router: React.PropTypes.object
+};
 
 export default EditBook;

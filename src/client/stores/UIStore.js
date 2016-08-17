@@ -10,7 +10,7 @@ class UIStore {
 
 const UI = new Proxy(new UIStore(), {
     get: (target, prop) => {
-        const reserved = {'$mobx': 1};
+        const reserved = {'$mobx': 1, 'constructor': 1};
 
         if (reserved.hasOwnProperty(prop)) {
             return target[prop];
