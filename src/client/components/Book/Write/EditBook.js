@@ -256,7 +256,12 @@ class EditBook extends React.Component {
 
         var form = document.querySelector('#bookMetadata');
         var params = serialize(form, {hash: true});
-        params.ext.audios = this.book.ext.audios;
+        params.ext = _.merge({}, this.book.ext, params.ext);
+
+        if (!params.ext.questions) {
+            this.error = 'Select a Book!';
+            return;
+        }
 
         this.loading = true;
         this.props.bookStore.updateBook({...params, id: this.book.id})
@@ -349,7 +354,7 @@ class EditBook extends React.Component {
                             {this.loading ?
                                 <CircularProgress size={0.5} /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleUpdateBook.bind(this)} />}
-                            <ErrorTip error={this.error} hasAction={true} duration={3500} />
+                            <ErrorTip error={this.error} hasAction={true} duration={3500} onClose={() => this.error = ''} />
                         </div>
                     </AdvancedMetadata>
                 );
@@ -366,7 +371,7 @@ class EditBook extends React.Component {
                             {this.loading ?
                                 <CircularProgress size={0.5} /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleBindAudios.bind(this)} />}
-                            <ErrorTip error={this.error} hasAction={true} duration={3500} />
+                            <ErrorTip error={this.error} hasAction={true} duration={3500} onClose={() => this.error = ''} />
                         </div>
                     </AudioInput>
                 );
@@ -382,7 +387,7 @@ class EditBook extends React.Component {
                             {this.loading ?
                                 <CircularProgress size={0.5} /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleBindAnswers.bind(this)} />}
-                            <ErrorTip error={this.error} hasAction={true} duration={3500} />
+                            <ErrorTip error={this.error} hasAction={true} duration={3500} onClose={() => this.error = ''} />
                         </div>
                     </WriteAnswers>
                 );

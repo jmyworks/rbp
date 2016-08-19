@@ -23,7 +23,6 @@ var apiServer = null;
 var resourceServer = null;
 var fileServer = null;
 
-var webpack_debug = require('./webpack.dev.config.js');
 var webpack_release = require('./webpack.config.js');
 
 var babelrc = {

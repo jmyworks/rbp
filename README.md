@@ -1,2 +1,3 @@
-# react-ready
-ready to use react+flux+node building web apps
+# A React Web-App
+
+React / MobX / Webpack / Gulp / Babel / MongoDB

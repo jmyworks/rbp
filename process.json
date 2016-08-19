@@ -1,0 +1,27 @@
+{
+    "apps": [{
+        "name": "API",
+        "script": "./build/server/APIServer.js",
+        "watch": false,
+        "max_restarts": 10,
+        "env": {
+            "NODE_ENV": "production"
+        }
+    }, {
+        "name": "Resource",
+        "script": "./build/server/ResourceServer.js",
+        "watch": false,
+        "max_restarts": 10,
+        "env": {
+            "NODE_ENV": "production"
+        }
+    }, {
+        "name": "File",
+        "script": "./build/server/FileServer.js",
+        "watch": false,
+        "max_restarts": 10,
+        "env": {
+            "NODE_ENV": "production"
+        }
+    }]
+}

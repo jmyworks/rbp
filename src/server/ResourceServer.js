@@ -5,15 +5,16 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import process from 'process';
 
 var server = express();
 var serverRoot = 'build';
 
 var responseFile = function(req, res, filepath, type) {
-    fs.readFile(filepath, function(err, data) {
+    fs.readFile(path.resolve(filepath), function(err, data) {
         if (err) {
             // handled, but can not read
-            res.status(404).end();
+            res.status(404).end(err.toString());
         } else {
             if (typeof type !== 'undefined') {
                 res.type(type);
@@ -27,7 +28,7 @@ var responseFile = function(req, res, filepath, type) {
 };
 
 // webpack hmr switch
-if (1) {
+if (process.env.NODE_ENV !== 'production') {
     var webpack = require('webpack');
     var webpackConfig = require('../../webpack.dev.config.js');
     var compiler = webpack(webpackConfig);
@@ -43,16 +44,6 @@ if (1) {
 
 // static handler
 server.use('/public/', express.static(path.join(serverRoot, 'public')));
-
-// app.js handler
-server.get('/*.?app.js', function(req, res) {
-    responseFile(req, res, path.join(serverRoot, req.originalUrl), 'js');
-});
-
-// app.js.map handler
-server.get('/*.?app.js.map', function(req, res) {
-    responseFile(req, res, path.join(serverRoot, req.originalUrl), 'json');
-});
 
 // other root resources handler
 server.get(/\/favicon\.ico|\/robots\.txt/, function(req, res) {

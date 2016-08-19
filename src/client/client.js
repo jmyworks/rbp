@@ -6,6 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+Promise.config({'warnings': false});
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Router, browserHistory} from 'react-router';

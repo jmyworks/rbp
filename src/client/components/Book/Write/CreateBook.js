@@ -91,7 +91,7 @@ class CreateBook extends React.Component {
                             {this.loading ?
                                 <CircularProgress size={0.5} /> :
                                 <RaisedButton label="Next" primary={true} onClick={this.handleCreateBook} />}
-                            <ErrorTip error={this.error} hasAction={true} duration={3500} />
+                            <ErrorTip error={this.error} hasAction={true} duration={3500} onClose={() => this.error = ''} />
                         </div>
                     </Metadata>
                 );
@@ -100,7 +100,7 @@ class CreateBook extends React.Component {
                     <div>
                         <RaisedButton style={{position: 'absolute', right: '0px', marginRight: '10px'}} label="Next" primary={true} onClick={this.handleBindResources} />
                         <Resources onFileUploaded={this.handleFileUploaded} onFileListChange={this.handleFileListChange} />
-                        <ErrorTip error={this.error} hasAction={true} duration={3500} />
+                        <ErrorTip error={this.error} hasAction={true} duration={3500} onClose={() => this.error = ''} />
                     </div>
                 );
             case 2:

@@ -11,7 +11,7 @@ var paramTypes = {
         ID: {
             typeOf: 'Number',
             validate: function(value) {
-                return Math.ceil(value) == Math.floor(value);
+                return Math.ceil(value) === Math.floor(value);
             }
         },
         API: {

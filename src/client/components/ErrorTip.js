@@ -15,19 +15,19 @@ class ErrorTip extends React.Component {
         extendObservable(this, {
             showError: false
         });
-
-        this.handleRequestClose = this.handleRequestClose.bind(this);
-        this.handleAction = this.handleAction.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.error) {
-            console.log(nextProps.error);
             this.showError = true;
         }
     }
 
     handleRequestClose(reason) {
+        if (this.props.onClose) {
+            this.props.onClose();
+        }
+
         if (reason === 'timeout') {
             // is there a duration?
             if (this.props.duration !== undefined) {
@@ -42,6 +42,10 @@ class ErrorTip extends React.Component {
     }
 
     handleAction() {
+        if (this.props.onClose) {
+            this.props.onClose();
+        }
+        
         this.showError = false;
     }
 
@@ -52,9 +56,9 @@ class ErrorTip extends React.Component {
                 open={this.showError}
                 message={this.props.error}
                 autoHideDuration={this.props.duration}
-                onRequestClose={this.handleRequestClose}
+                onRequestClose={this.handleRequestClose.bind(this)}
                 action={this.props.hasAction ? 'Dismiss' : undefined}
-                onActionTouchTap={this.handleAction}
+                onActionTouchTap={this.handleAction.bind(this)}
             />);
         }
 

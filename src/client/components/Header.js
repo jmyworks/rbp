@@ -18,7 +18,6 @@ class Header extends React.Component {
                 <Tabs style={{width: '30%'}}>
                     <Tab label="Home" onActive={() => {this.context.router.push('/'); }}/>
                     <Tab label="Book" onActive={() => {this.context.router.push('/Book'); }}/>
-                    <Tab label="Discuss" onActive={() => {this.context.router.push('/Discuss'); }}/>
                     <Tab label="About" onActive={() => {this.context.router.push('/About'); }}/>
                 </Tabs>
             </AppBar>

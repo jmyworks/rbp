@@ -116,7 +116,8 @@ var RESTHelper = {
                 checkParams: function (params) {
                     // check id
                     if (_.endsWith(meta.uri, ':id')) {
-                        if (!params.id || !typeCheck('ID', params.id, paramTypes)) {
+                        var integer = /^\d+$/;
+                        if (!params.id || !integer.test(params.id)) {
                             return 'id';
                         }
                     }

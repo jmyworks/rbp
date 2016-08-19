@@ -9,7 +9,7 @@ import EditBook from './EditBook';
 class Write extends React.Component {
     render() {
         if (this.props.params.id) {
-            return <EditBook id={this.props.params.id} />;
+            return <EditBook id={parseInt(this.props.params.id)} />;
         }
 
         return <CreateBook />;

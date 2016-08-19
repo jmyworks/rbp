@@ -9,7 +9,7 @@
 import mongoose from 'mongoose';
 import autoIncrement from 'mongoose-auto-increment';
 
-var mongodb = mongoose.createConnection("mongodb://localhost/test");
+var mongodb = mongoose.createConnection('mongodb://db:27017/book');
 autoIncrement.initialize(mongodb);
 
 export default mongodb;

@@ -19,6 +19,7 @@ require('pdfjs-dist/web/compatibility');
 require('pdfjs-dist/web/pdf_viewer.css');
 window.PDFJS.cMapUrl = '/public/cmaps/';
 window.PDFJS.cMapPacked = true;
+window.PDFJS.disableWorker = true;
 
 @observer
 class PDF extends React.Component {

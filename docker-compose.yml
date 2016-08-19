@@ -1,0 +1,16 @@
+version: '2'
+services:
+    web:
+        image: koumuu/book
+        links:
+            - db
+        ports:
+            - '80:3000'
+            - '8000:8000'
+            - '9000:9000'
+    db:
+        image: mongo
+        volumes:
+            - '/data/db:/data/db'
+        ports:
+            - '27017:27017'

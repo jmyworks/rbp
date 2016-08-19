@@ -1,0 +1,6 @@
+.vagrant
+node_modules
+.editorconfig
+.gitignore
+Vagrantfile
+webpack.dev.config.js
