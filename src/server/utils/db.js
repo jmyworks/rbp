@@ -9,7 +9,10 @@
 import mongoose from 'mongoose';
 import autoIncrement from 'mongoose-auto-increment';
 
-var mongodb = mongoose.createConnection('mongodb://db:27017/book');
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
+
+var mongodb = mongoose.createConnection('mongodb://db:27017/book', options);
 autoIncrement.initialize(mongodb);
 
 export default mongodb;
