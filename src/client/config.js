@@ -8,9 +8,9 @@
 
 var config = {
     restClient: {
-        baseUrl: 'http://localhost:8000/api/'
+        baseUrl: 'http://ec2-54-199-160-182.ap-northeast-1.compute.amazonaws.com:8000/api/'
     },
-    fileServer: 'http://localhost:9000/upload/'
+    fileServer: 'http://ec2-54-199-160-182.ap-northeast-1.compute.amazonaws.com:9000/upload/'
 };
 
 export default config;
